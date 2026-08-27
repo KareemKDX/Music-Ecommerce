@@ -1,4 +1,4 @@
-# 🎵 E-SHOP — Music Equipment Store
+#  E-SHOP — Music Equipment Store
 
 A full-stack e-commerce web application built as a school project.
 The application allows customers to browse products, manage their shopping cart and place orders, while administrators can manage products and orders through an admin dashboard.
