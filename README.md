@@ -3,7 +3,7 @@
 A full-stack e-commerce web application built as a school project.
 The application allows customers to browse products, manage their shopping cart and place orders, while administrators can manage products and orders through an admin dashboard.
 
-## 🚀 Live Demo
+## Live Demo
 
 **Frontend:** https://eshop-frontend-mauve.vercel.app/
 
@@ -13,7 +13,7 @@ The application allows customers to browse products, manage their shopping cart 
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -42,7 +42,7 @@ The application allows customers to browse products, manage their shopping cart 
 
 ---
 
-## ✨ Features
+## Features
 
 ### 👤 Customer
 
@@ -67,7 +67,7 @@ The application allows customers to browse products, manage their shopping cart 
 
 ---
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```text
 project/
@@ -138,7 +138,7 @@ Order information is stored separately from the current product data, allowing p
 
 ---
 
-## 🗄️ Database
+## Database
 
 The application uses MySQL with tables for the main e-commerce entities:
 
@@ -153,7 +153,7 @@ The backend uses a MySQL connection pool through `mysql2/promise` to efficiently
 
 ---
 
-## 💻 Running the Project Locally
+## Running the Project Locally
 
 ### 1. Clone the repository
 
