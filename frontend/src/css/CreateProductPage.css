@@ -1,0 +1,18 @@
+.create-product-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+.create-product-header {
+  background-color: var(--color-border);
+  padding: 2rem;
+
+  border-start-start-radius: 50px;
+}
+
+.create-product-header h1 {
+  color: var(--color-text);
+}

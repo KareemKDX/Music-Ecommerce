@@ -1,0 +1,403 @@
+--var * {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background-color: #d19c1d;
+  color: #222;
+}
+
+:root {
+  --primary-background: #000000;
+  --color-surface: #1e1e1e;
+  --color-primary: #d19c1d;
+  --color-primary-darkened: #9c7315;
+  --color-secondary: #5f7367;
+  --color-text: #fbfef9;
+  --color-text-dark: #18181b;
+  --color-border: #333333;
+  --color-text-gold: #d19c1d;
+  --radius-small: 6px;
+  --radius-medium: 10px;
+  --radius-large: 16px;
+}
+
+.page-container {
+  background-color: white;
+  padding-top: 80px;
+  max-width: 2000px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.forms-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+button {
+  font: inherit;
+}
+
+.primary-button {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-small);
+  background-color: var(--color-primary-darkened);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary-button:hover {
+  background-color: var(--color-primary);
+  text-decoration: none;
+}
+
+.secondary-button {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-small);
+  background-color: var(--color-border);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-button {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-small);
+  background-color: var(--color-border);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-button {
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-small);
+  background-color: var(--color-border);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #b42318;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin: 2px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  font-weight: 200;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+button:hover {
+  background: #444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================
+   BUTTON VARIANTS
+========================= */
+
+.btn-primary {
+  background: #2563eb;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-success {
+  background: #16a34a;
+}
+
+.btn-success:hover {
+  background: #15803d;
+}
+
+.btn-danger {
+  background: #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #222;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  font: inherit;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+h1,
+h2,
+h3,
+h4 {
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* =========================
+   Reusable Form Layout
+   ========================= */
+
+.form-card {
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  box-sizing: border-box;
+
+  background-color: #fff;
+  border: 1px solid #e2e2e2;
+  border-radius: var(--radius-small);
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 0.8rem 0.9rem;
+
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+
+  background-color: #fff;
+  color: var(--color-text-dark);
+
+  font-family: inherit;
+  font-size: 1rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #888;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================
+   Form Buttons
+   ========================= */
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.form-actions button {
+  flex: 1;
+
+  padding: 0.85rem 1.2rem;
+
+  border: none;
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.form-actions .primary {
+  background-color: #222;
+  color: #fff;
+}
+
+.form-actions .primary:hover {
+  background-color: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.form-actions .secondary {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.form-actions .secondary:hover {
+  background-color: #e5e5e5;
+}
+
+@media (max-width: 600px) {
+  .form-page {
+    padding: 2rem 1rem;
+  }
+
+  .form-page h1 {
+    font-size: 1.6rem;
+  }
+
+  .form-card {
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,75 @@
+TIDSLOGG
+
+----------
+FÖRARBETE
+----------
+
+Planering (databas)
+Planerad tid: 2h
+Faktisk tid: 2h
+
+CSS pre design & mockups
+Planerad tid: 3h
+Faktisk tid: 3h
+
+ER-diagram & sitemap
+Planerad tid: 2h
+Faktisk tid: 3h
+
+Databas uppsättning
+Planerad tid: 5h
+Faktisk tid: 6h
+
+-----------------
+ENDPOINTS & API 
+------------------
+
+Produkt (get, getById)
+Planerad tid: 4h
+Faktisk tid: 3h
+
+
+Admin skapa/redigera/delete
+Planerad tid: 6h
+Faktisk tid: 5h
+
+Admin - Orders (endpoints)
+Planerad tid: 6h
+Faktisk tid: 4h
+
+
+Context & Varukorg 
+Planerad tid: 6h
+Faktisk tid: 9h 
+
+Betala/Skapa order 
+Planerad tid: 6h
+Faktisk tid: 4h
+
+-----------
+SÄKERHET
+-------------
+JWT tokens
+Planerad tid: 3h
+Faktisk tid: 5h
+
+
+Lägg till CSS på sidor
+
+--------
+DEPLOY
+-------
+
+Deploy
+Planerad tid: 10 h
+Faktisk tid: 4 h
+
+
+---------
+TESTNING
+--------
+
+Testning av hela sidan
+Planerad tid: 4h
+Faktisk tid: 2h
+

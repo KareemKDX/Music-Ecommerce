@@ -1,0 +1,9 @@
+.edit-product-header {
+  background-color: var(--color-border);
+  padding: 2rem;
+  border-start-start-radius: 50px;
+}
+
+.edit-product-header h1 {
+  color: var(--color-text);
+}

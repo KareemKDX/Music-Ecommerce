@@ -1,0 +1,98 @@
+.order-page {
+  max-width: 1000px;
+  margin: 120px auto 40px;
+  padding: 0 20px;
+  height: 100vh;
+}
+
+.order-page h1 {
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.order-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.order-summary,
+.shipping-section {
+  padding: 25px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: white;
+}
+
+.order-summary h2,
+.shipping-section h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.order-item h3 {
+  margin: 0 0 5px;
+}
+
+.order-item p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 2px solid #e5e7eb;
+  font-size: 20px;
+}
+
+.shipping-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 1rem;
+}
+
+.shipping-section label {
+  font-weight: 600;
+}
+
+.shipping-section textarea {
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.shipping-section button {
+  margin-top: 10px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.shipping-section button:hover {
+  background: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+  .order-container {
+    grid-template-columns: 1fr;
+  }
+}
