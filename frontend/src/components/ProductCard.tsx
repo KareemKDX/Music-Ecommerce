@@ -1,37 +1,25 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import type { Product } from "../types/Product";
 import CartContext from "../context/CartContext";
+import CurrencyContext from "../context/CurrencyContext";
 import { isTokenValid } from "../utils/isTokenValid";
 import { useNavigate } from "react-router-dom";
 
-type Rates = {
-  base: string;
-  date: string;
-  rates: Record<string, number>;
-};
-
-function ProductCard({
-  product,
-  chosenCurrency,
-}: {
-  product: Product;
-  chosenCurrency: string;
-}) {
+function ProductCard({ product }: { product: Product }) {
   const context = useContext(CartContext);
   const token = localStorage.getItem("token");
   const isLoggedIn = isTokenValid(token);
   const navigate = useNavigate();
-  const [rates, setRates] = useState<Rates | null>(null);
 
-  useEffect(() => {
-    fetch("/api/currency/rates?base=SEK")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+  const currencyContext = useContext(CurrencyContext);
 
-        setRates(data);
-      });
-  }, []);
+  if (!currencyContext) {
+    throw new Error("Hittar ej CurrencyContext i productcard.tsx");
+  }
+
+  const { chosenCurrency, rates } = currencyContext;
+  console.log("currency:", chosenCurrency);
+  console.log("rates:", rates);
 
   if (!context) {
     throw new Error("Hittar ej context i productcard.tsx");

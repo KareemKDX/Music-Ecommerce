@@ -3,6 +3,7 @@ import "../css/Navbar.css";
 import CartContext from "../context/CartContext";
 import Cart from "./Cart";
 import { NavLink } from "react-router-dom";
+import CurrencySelector from "./CurrencySelector";
 import { isTokenValid } from "../utils/isTokenValid";
 import { getTokenRole } from "../utils/getTokenRole";
 import { accountLogout } from "../utils/adminLogout";
@@ -63,20 +64,26 @@ const Navbar: React.FC = () => {
           )}
         </div>
 
-        <div className="cart-wrapper">
-          <button
-            className="cart-button"
-            onClick={() => setCartOpen(!cartOpen)}
-          >
-            🛒
-            {cartAmount > 0 && <span className="cart-count">{cartAmount}</span>}
-          </button>
+        <div className="nav-right-container">
+          <CurrencySelector />
 
-          {cartOpen && (
-            <div className="cart-dropdown">
-              <Cart />
-            </div>
-          )}
+          <div className="cart-wrapper">
+            <button
+              className="cart-button"
+              onClick={() => setCartOpen(!cartOpen)}
+            >
+              🛒
+              {cartAmount > 0 && (
+                <span className="cart-count">{cartAmount}</span>
+              )}
+            </button>
+
+            {cartOpen && (
+              <div className="cart-dropdown">
+                <Cart />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -15,6 +15,12 @@
     0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
+.nav-right-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .navbar-container {
   margin: 0 auto;
   padding: 0 16px;
@@ -107,7 +113,35 @@
   background-color: var(--color-text);
   transition: all 0.3s ease;
 }
+.currency-selector {
+  display: flex;
+  align-items: center;
+}
 
+.currency-selector label {
+  display: none;
+}
+
+.currency-selector select {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+}
+
+.currency-selector select:hover {
+  border-color: var(--color-primary);
+}
+
+.currency-selector select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(209, 156, 29, 0.25);
+}
 @media (max-width: 768px) {
   .navbar {
     height: 60px;
