@@ -3,27 +3,26 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background-color: rgba(255, 255, 255, 0.95);
+  height: 64px;
+  background-color: var(--primary-background);
   z-index: 1000;
   transition: all 0.3s ease;
 
   max-width: 2000px;
   margin: 0 auto;
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.12),
-    0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 .nav-right-container {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
 }
 
 .navbar-container {
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 24px;
   height: 100%;
   display: flex;
   align-items: center;
@@ -34,33 +33,99 @@
 .navbar-logo {
   display: flex;
   align-items: center;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-text-gold);
+  gap: 10px;
   text-decoration: none;
-  transition: color 0.2s ease;
 }
 
+.logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-small);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-darkened)
+  );
+  color: var(--color-text-dark);
+  font-size: 18px;
+  font-weight: 800;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    #f3d27a,
+    var(--color-primary)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.navbar-logo:hover .logo-mark {
+  transform: rotate(-8deg) scale(1.08);
+  box-shadow: 0 0 14px rgba(209, 156, 29, 0.6);
+}
 .navbar-logo:hover {
   color: var(--color-text-gold);
 }
 
 .navbar-links {
   display: flex;
-
-  gap: 32px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  flex: 1;
 }
 
+.nav-link-center {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-left {
+  flex: 1;
+}
 .navbar-links a {
   position: relative;
   color: var(--color-text);
   text-decoration: none;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   padding: 8px 0;
   transition: color 0.2s ease;
 }
 
+.navbar-links a.login-btn-nav {
+  padding: 8px 20px;
+  border-radius: 999px;
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.navbar-links a.login-btn-nav:hover {
+  background-color: #f3d27a;
+  color: var(--color-text-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(209, 156, 29, 0.5);
+}
+
+.navbar-links a.login-btn-nav::after {
+  display: none;
+}
 .navbar-links a:hover {
   color: var(--color-text-gold);
 }
@@ -113,6 +178,7 @@
   background-color: var(--color-text);
   transition: all 0.3s ease;
 }
+
 .currency-selector {
   display: flex;
   align-items: center;
@@ -125,7 +191,7 @@
 .currency-selector select {
   width: auto;
   padding: 6px 10px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-text);
   background-color: var(--color-surface);
@@ -142,9 +208,10 @@
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(209, 156, 29, 0.25);
 }
+
 @media (max-width: 768px) {
   .navbar {
-    height: 60px;
+    height: 56px;
   }
 
   .navbar-container {
@@ -152,7 +219,7 @@
   }
 
   .navbar-logo {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .navbar-toggle {
@@ -163,18 +230,17 @@
 
   .navbar-links {
     position: absolute;
-    top: 60px;
+    top: 56px;
     left: 0;
     right: 0;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 0;
 
     background-color: var(--primary-background);
-
-    padding: 10px 20px 20px;
-
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    padding: 8px 20px 16px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 
     opacity: 0;
     visibility: hidden;
@@ -196,10 +262,8 @@
   .navbar-links button {
     width: 100%;
     box-sizing: border-box;
-
-    padding: 14px 0;
-
-    font-size: 17px;
+    padding: 12px 0;
+    font-size: 15px;
     text-align: left;
   }
 
@@ -217,10 +281,22 @@
 
   .navbar-links button:hover {
     color: var(--color-text-gold);
+    box-shadow: none;
+    transform: none;
   }
 
   .toggle-bar {
-    width: 25px;
+    width: 24px;
     height: 2px;
+  }
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+    letter-spacing: 0.14em;
   }
 }

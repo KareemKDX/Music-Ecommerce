@@ -1,4 +1,4 @@
-* {
+--var * {
   box-sizing: border-box;
 }
 
@@ -11,9 +11,9 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  background-color: var(--primary-background);
-  color: var(--color-text-dark);
-  line-height: 1.5;
+
+  background-color: #d19c1d;
+  color: #222;
 }
 
 :root {
@@ -47,41 +47,8 @@ body {
   flex-wrap: wrap;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
 button {
   font: inherit;
-  border: none;
-  border-radius: var(--radius-small);
-  padding: 10px 16px;
-  margin: 2px;
-  background: var(--color-text-dark);
-  color: white;
-  cursor: pointer;
-  font-weight: 600;
-  transition:
-    background 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
-}
-
-button:hover {
-  background: #333;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-button:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .primary-button {
@@ -123,11 +90,6 @@ button:disabled {
   cursor: pointer;
 }
 
-.secondary-button:hover,
-.back-button:hover {
-  background-color: #4a4a4a;
-}
-
 .delete-button {
   padding: 12px;
   border: none;
@@ -141,6 +103,42 @@ button:disabled {
 
 .delete-button:hover {
   background-color: #b42318;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin: 2px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  font-weight: 200;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+button:hover {
+  background: #444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* =========================
@@ -199,16 +197,11 @@ select {
     box-shadow 0.2s ease;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
-  width: auto;
-}
-
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(209, 156, 29, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 textarea {
@@ -220,13 +213,9 @@ textarea {
 ========================= */
 
 a {
-  color: var(--color-primary-darkened);
+  color: #2563eb;
   text-decoration: none;
   transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--color-primary);
 }
 
 /* =========================
@@ -235,18 +224,10 @@ a:hover {
 
 .card {
   background: white;
-  border: 1px solid #eee;
-  border-radius: var(--radius-medium);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* =========================
@@ -269,17 +250,37 @@ h2 {
 }
 
 /* =========================
-   Reusable Form Layout
+   FORM
 ========================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* =========================
+   Reusable Form Layout
+   ========================= */
 
 .form-card {
   width: 100%;
   max-width: 600px;
   padding: 2rem;
+  box-sizing: border-box;
+
   background-color: #fff;
   border: 1px solid #e2e2e2;
   border-radius: var(--radius-small);
+
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -300,13 +301,25 @@ h2 {
 .form-group input,
 .form-group textarea,
 .form-group select {
+  width: 100%;
+  box-sizing: border-box;
+
   padding: 0.8rem 0.9rem;
+
   border: 1px solid #d5d5d5;
   border-radius: 8px;
+
   background-color: #fff;
   color: var(--color-text-dark);
+
   font-family: inherit;
   font-size: 1rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-group textarea {
@@ -317,13 +330,13 @@ h2 {
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(209, 156, 29, 0.2);
+  border-color: #888;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
 
 /* =========================
    Form Buttons
-========================= */
+   ========================= */
 
 .form-actions {
   display: flex;
@@ -333,13 +346,18 @@ h2 {
 
 .form-actions button {
   flex: 1;
+
   padding: 0.85rem 1.2rem;
+
   border: none;
   border-radius: 8px;
+
   font-family: inherit;
   font-size: 1rem;
   font-weight: 600;
+
   cursor: pointer;
+
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,

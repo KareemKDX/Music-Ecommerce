@@ -29,8 +29,11 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-logo">
-          <span>SPEXAH</span>
+        <div className="nav-left">
+          <NavLink to="/" className="navbar-logo">
+            <span className="logo-mark">S</span>
+            <span className="logo-text">SPEXAH Instruments</span>
+          </NavLink>
         </div>
 
         <button
@@ -44,45 +47,52 @@ const Navbar: React.FC = () => {
         </button>
 
         <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
-          <NavLink to="/">Products</NavLink>
-          <NavLink to="/about">About</NavLink>
+          <div className="nav-link-center">
+            <NavLink to="/">Products</NavLink>
+            <NavLink to="/about">About</NavLink>
+          </div>
 
-          {isLoggedIn && role === "admin" && (
-            <NavLink to="/admin">Admin Dashboard</NavLink>
-          )}
-          {isLoggedIn && role === "customer" && (
-            <NavLink to="/account">My account</NavLink>
-          )}
-
-          {isLoggedIn && <button onClick={accountLogout}>Logout</button>}
-
-          {!isLoggedIn && (
-            <>
-              <NavLink to="/admin/login">Admin Login</NavLink>
-              <NavLink to="/login">Customer Login</NavLink>
-            </>
-          )}
-        </div>
-
-        <div className="nav-right-container">
-          <CurrencySelector />
-
-          <div className="cart-wrapper">
-            <button
-              className="cart-button"
-              onClick={() => setCartOpen(!cartOpen)}
-            >
-              🛒
-              {cartAmount > 0 && (
-                <span className="cart-count">{cartAmount}</span>
-              )}
-            </button>
-
-            {cartOpen && (
-              <div className="cart-dropdown">
-                <Cart />
-              </div>
+          <div className="nav-right-container">
+            {isLoggedIn && role === "admin" && (
+              <NavLink to="/admin">Admin Dashboard</NavLink>
             )}
+            {isLoggedIn && role === "customer" && (
+              <NavLink to="/account">My account</NavLink>
+            )}
+
+            {isLoggedIn && (
+              <button className="btn-logout" onClick={accountLogout}>
+                Logout
+              </button>
+            )}
+
+            {!isLoggedIn && (
+              <>
+                <NavLink className="login-btn-nav" to="/login">
+                  Login
+                </NavLink>
+              </>
+            )}
+
+            <CurrencySelector />
+
+            <div className="cart-wrapper">
+              <button
+                className="cart-button"
+                onClick={() => setCartOpen(!cartOpen)}
+              >
+                🛒
+                {cartAmount > 0 && (
+                  <span className="cart-count">{cartAmount}</span>
+                )}
+              </button>
+
+              {cartOpen && (
+                <div className="cart-dropdown">
+                  <Cart />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
