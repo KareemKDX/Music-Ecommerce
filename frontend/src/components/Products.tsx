@@ -4,10 +4,12 @@ import ProductCard from "./ProductCard";
 import "../css/Products.css";
 import api from "../axios/api";
 import Loading from "../components/Loading";
+import CurrencySelector from "./CurrencySelector";
 
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chosenCurrency, setChosenCurrency] = useState("KR");
 
   useEffect(() => {
     async function getProducts() {
@@ -30,11 +32,22 @@ function Products() {
   }
 
   return (
-    <div className="product-container">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
+    <>
+      <CurrencySelector
+        chosenCurrency={chosenCurrency}
+        setChosenCurrency={setChosenCurrency}
+      />
+
+      <div className="product-container">
+        {products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            chosenCurrency={chosenCurrency}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
