@@ -18,8 +18,6 @@ function ProductCard({ product }: { product: Product }) {
   }
 
   const { chosenCurrency, rates } = currencyContext;
-  console.log("currency:", chosenCurrency);
-  console.log("rates:", rates);
 
   if (!context) {
     throw new Error("Hittar ej context i productcard.tsx");
