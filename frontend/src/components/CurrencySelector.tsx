@@ -8,11 +8,10 @@ function CurrencySelector() {
     throw new Error("Hittar ej CurrencyContext i CurrencySelector");
   }
 
-  const { chosenCurrency, setChosenCurrency } = context;
+  const { chosenCurrency, setChosenCurrency, ratesError } = context;
 
   return (
     <div className="currency-selector">
-      <label>Select currency:</label>
       <select
         value={chosenCurrency}
         onChange={(e) => setChosenCurrency(e.target.value)}
@@ -21,6 +20,9 @@ function CurrencySelector() {
         <option value="EUR">EUR</option>
         <option value="USD">USD</option>
       </select>
+      {ratesError && (
+        <p className="error-text">Exchange rates unavailable. Showing SEK.</p>
+      )}
     </div>
   );
 }

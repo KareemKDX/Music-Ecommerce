@@ -10,6 +10,7 @@ type CurrencyContextType = {
   chosenCurrency: string;
   setChosenCurrency: (currency: string) => void;
   rates: Rates | null;
+  ratesError: boolean;
 };
 
 const CurrencyContext = createContext<CurrencyContextType | null>(null);
@@ -17,19 +18,33 @@ const CurrencyContext = createContext<CurrencyContextType | null>(null);
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [chosenCurrency, setChosenCurrency] = useState("KR");
   const [rates, setRates] = useState<Rates | null>(null);
+  const [ratesError, setRatesError] = useState(false);
 
   useEffect(() => {
-    fetch("/api/currency/rates?base=SEK")
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Rates:", data);
-        setRates(data);
-      });
-  }, []);
+    async function loadRates() {
+      try {
+        const response = await fetch("/api/currency/rates?base=SEK");
 
+        if (!response.ok) {
+          throw new Error("Rates request failed: " + response.status);
+        }
+
+        const data = await response.json();
+        setRates(data);
+        setRatesError(false);
+      } catch (error) {
+        console.error("Could not fetch rates, showing SEK", error);
+        setRates(null);
+        setChosenCurrency("KR");
+        setRatesError(true);
+      }
+    }
+
+    loadRates();
+  }, []);
   return (
     <CurrencyContext.Provider
-      value={{ chosenCurrency, setChosenCurrency, rates }}
+      value={{ chosenCurrency, setChosenCurrency, rates, ratesError }}
     >
       {children}
     </CurrencyContext.Provider>

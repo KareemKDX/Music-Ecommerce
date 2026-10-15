@@ -9,6 +9,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminPage from "./pages/AdminPage";
 import EditProductPage from "./pages/EditProductPage";
 import CreateProductPage from "./pages/CreateProductPage";
+import AdminProductPage from "./pages/AdminProductPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import { CartProvider } from "./context/CartContext";
@@ -39,6 +40,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/products"
+                element={
+                  <ProtectedRoute>
+                    <AdminProductPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/product/create"
+                element={
+                  <ProtectedRoute>
+                    <CreateProductPage />
                   </ProtectedRoute>
                 }
               />
