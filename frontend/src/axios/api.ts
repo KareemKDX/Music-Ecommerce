@@ -1,9 +1,7 @@
 import axios from "axios";
 
-//"https://eshop-backend-gules.vercel.app/api"
-
 const api = axios.create({
-  baseURL: "https://eshop-backend-gules.vercel.app/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 api.interceptors.request.use((config) => {

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import type { Product } from "../types/Product";
 import CartContext from "../context/CartContext";
+import CurrencyContext from "../context/CurrencyContext";
 import { isTokenValid } from "../utils/isTokenValid";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +10,14 @@ function ProductCard({ product }: { product: Product }) {
   const token = localStorage.getItem("token");
   const isLoggedIn = isTokenValid(token);
   const navigate = useNavigate();
+
+  const currencyContext = useContext(CurrencyContext);
+
+  if (!currencyContext) {
+    throw new Error("Hittar ej CurrencyContext i productcard.tsx");
+  }
+
+  const { chosenCurrency, rates } = currencyContext;
 
   if (!context) {
     throw new Error("Hittar ej context i productcard.tsx");
@@ -23,6 +32,20 @@ function ProductCard({ product }: { product: Product }) {
     addToCart(product);
   }
 
+  function convertPrice(price: number, currency: string) {
+    if (!rates) {
+      return price + " kr";
+    }
+
+    if (currency === "EUR") {
+      return (price * rates.rates.EUR).toFixed(2) + " €";
+    }
+    if (currency === "USD") {
+      return (price * rates.rates.USD).toFixed(2) + " $";
+    }
+    return price + " kr";
+  }
+
   const { addToCart } = context;
 
   return (
@@ -33,7 +56,9 @@ function ProductCard({ product }: { product: Product }) {
 
       <div className="product-info">
         <h2>{product.name}</h2>
-        <p className="product-price">{product.price} kr</p>
+        <p className="product-price">
+          {convertPrice(product.price, chosenCurrency)}
+        </p>
       </div>
 
       <div className="product-actions">

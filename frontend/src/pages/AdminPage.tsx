@@ -52,6 +52,10 @@ function AdminPage() {
             <h2>Products</h2>
             <p>Manage our products</p>
 
+            <Link className="primary-button" to="/admin/products">
+              HANDLE / SEE ALL PRODUCTS
+            </Link>
+
             <Link className="primary-button" to="/admin/product/create">
               + Create New Product
             </Link>

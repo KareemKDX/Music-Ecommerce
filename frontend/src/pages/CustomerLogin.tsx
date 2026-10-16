@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../axios/api";
 import "../css/AdminLogin.css";
+import { NavLink } from "react-router-dom";
 
 function CustomerLogin() {
   const [email, setEmail] = useState("");
@@ -65,6 +66,9 @@ function CustomerLogin() {
                 Logga in
               </button>
             </form>
+            <NavLink className="admin-login-btn" to="/admin/login">
+              Are you an admin? Press here to login.
+            </NavLink>
           </div>
 
           {error && <p>{error}</p>}
