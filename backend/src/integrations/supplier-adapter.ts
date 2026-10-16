@@ -5,6 +5,7 @@
 
 import { parse } from "csv-parse/sync";
 import { XMLParser } from "fast-xml-parser";
+import { z } from "zod";
 
 const BASE_URL = process.env.SUPPLIER_API_URL;
 
@@ -42,12 +43,19 @@ async function fetchFromSupplier(path: string): Promise<Response> {
   return response;
 }
 
-export type Product = {
+export const ProductSchema = z.object({
+  sku: z.string("Invalid/missing sku").min(1),
+  name: z.string("Invalid/missing name").min(1),
+  description: z.string("Invalid/missing description"),
+  price: z.number("Invalid/missing price").positive(),
+  image: z.string("Invalid/missing image url"),
+});
+
+export type Product = z.infer<typeof ProductSchema>;
+
+export type SkippedProduct = {
   sku: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
+  reason: string;
 };
 
 // "599,00" → 599. The Swedish decimal comma must become a dot before Number().
@@ -99,21 +107,34 @@ export async function getCsvProducts() {
   });
   console.log("[CSV] 4. After parse:", rows);
 
-  // 5. Supplier's fields → our fields, text → number
-  const products: Product[] = rows.map((row) => ({
-    sku: row.artNr,
-    name: row.benamning,
-    description: "Imported from supplier",
-    price: toNumber(row.pris),
-    image: "product-placeholder.jpg",
-  }));
+  const products: Product[] = [];
+  const skipped: SkippedProduct[] = [];
+
+  for (const row of rows) {
+    const candidate = {
+      sku: row.artNr,
+      name: row.benamning,
+      description: "Imported from supplier",
+      price: toNumber(row.pris),
+      image: "product-placeholder.jpg",
+    };
+
+    const result = ProductSchema.safeParse(candidate);
+
+    if (result.success) {
+      products.push(result.data);
+    } else {
+      skipped.push({
+        sku: row.artNr,
+        reason: result.error.issues[0].message,
+      });
+    }
+  }
 
   console.log("[CSV] 5. Our model:", products);
 
-  return { text, rows, products };
-  // return { text: "", rows: 0, products: []}
+  return { text, rows, products, skipped };
 }
-
 /* --- XML --- */
 type XmlProduct = {
   "@_artNr": string;

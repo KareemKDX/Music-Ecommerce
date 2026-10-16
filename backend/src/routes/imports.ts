@@ -10,7 +10,15 @@ const router = Router();
 // GET /api/import/csv?debug=true → every intermediate step, so you can see them in Insomnia
 router.get("/csv", async (req, res) => {
   const result = await getCsvProducts();
-  res.json(req.query.debug ? result : result.products);
+
+  if (req.query.debug) {
+    res.json(result);
+  } else {
+    res.json({
+      products: result.products,
+      skipped: result.skipped,
+    });
+  }
 });
 
 router.get("/xml", async (req, res) => {
