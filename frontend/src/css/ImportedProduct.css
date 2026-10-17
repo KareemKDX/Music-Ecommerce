@@ -29,3 +29,16 @@
 .admin-table tbody tr:hover {
   background: #fafafa;
 }
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.pagination span {
+  font-size: 14px;
+  color: #6b7280;
+}

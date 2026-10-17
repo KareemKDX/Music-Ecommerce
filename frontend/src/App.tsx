@@ -10,6 +10,7 @@ import AdminPage from "./pages/AdminPage";
 import EditProductPage from "./pages/EditProductPage";
 import CreateProductPage from "./pages/CreateProductPage";
 import AdminProductPage from "./pages/AdminProductPage";
+import AdminOrderPage from "./pages/AdminOrderPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import { CartProvider } from "./context/CartContext";
@@ -48,6 +49,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <AdminProductPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/orders"
+                element={
+                  <ProtectedRoute>
+                    <AdminOrderPage />
                   </ProtectedRoute>
                 }
               />

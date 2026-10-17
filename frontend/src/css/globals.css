@@ -101,6 +101,16 @@ button {
   cursor: pointer;
 }
 
+.inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #9ca3af;
+  color: #fff;
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+}
 .delete-button:hover {
   background-color: #b42318;
 }
@@ -415,4 +425,8 @@ h2 {
   .form-actions {
     flex-direction: column;
   }
+}
+
+.error-text {
+  color: red;
 }

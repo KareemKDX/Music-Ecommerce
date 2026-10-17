@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Product } from "../types/Product";
+import type { Order } from "../types/Order";
 import { Link } from "react-router-dom";
-import AdminProductCard from "../components/AdminProductCard";
-import Orders from "../components/Orders";
 
 import api from "../axios/api";
 import "../css/AdminPage.css";
@@ -10,70 +9,68 @@ import "../css/Products.css";
 
 function AdminPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   // const token = localStorage.getItem("token");
 
   useEffect(() => {
-    async function getProducts() {
+    async function getDashboardData() {
       try {
-        const response = await api.get("/products");
+        const productResponse = await api.get("/products");
+        const orderResponse = await api.get("/orders");
 
-        const data: Product[] = response.data;
+        const productData: Product[] = productResponse.data;
+        const orderData: Order[] = orderResponse.data;
 
-        setProducts(data);
+        setProducts(productData);
+        setOrders(orderData);
       } catch (error) {
         console.error(error);
       }
     }
 
-    getProducts();
+    getDashboardData();
   }, []);
-
-  //REMOVE FROM DATABASE
-  async function deleteProduct(id: number) {
-    try {
-      await api.delete("/products/" + id);
-
-      // REMOVE FROM UI
-      setProducts((prev) => prev.filter((product) => product.id !== id));
-    } catch (error) {
-      console.error("Error deleting product", error);
-    }
-  }
 
   return (
     <div className="admin-page">
       <div className="admin-header-content">
-        <h1>Admin Dashboard</h1>
+        <div>
+          <h1>Admin Dashboard</h1>
+          <p className="admin-subtitle">Overview of products and orders</p>
+        </div>
       </div>
 
       <div className="admin-content">
-        <div className="admin-product-container">
+        <div className="admin-panel">
           <div className="admin-product-header-box">
-            <h2>Products</h2>
-            <p>Manage our products</p>
-
-            <Link className="primary-button" to="/admin/products">
-              HANDLE / SEE ALL PRODUCTS
-            </Link>
-
-            <Link className="primary-button" to="/admin/product/create">
-              + Create New Product
-            </Link>
+            <h2>Product</h2>
+            <p>Total products: {products.length}</p>
           </div>
+          <div className="admin-actions">
+            <Link className="outline-button" to="/admin/products">
+              Product Dashboard
+            </Link>
 
-          <div className="admin-product-box">
-            {products.map((product) => (
-              <AdminProductCard
-                key={product.id}
-                product={product}
-                deleteProduct={deleteProduct}
-              />
-            ))}
+            <Link className="primary-button" to="/admin/orders">
+              See orders
+            </Link>
           </div>
         </div>
+        <div className="admin-panel">
+          <div className="admin-product-header-box">
+            <h2>Orders</h2>
+            <p>Total orders: {orders.length}</p>
+          </div>
 
-        <div className="admin-order-container-box">
-          <Orders />
+          <div className="admin-actions">
+            <Link className="outline-button" to="/admin/orders">
+              Order Dashboard
+            </Link>
+
+            <Link className="primary-button" to="/admin/orders">
+              See orders
+            </Link>
+          </div>
         </div>
       </div>
     </div>

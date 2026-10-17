@@ -172,14 +172,29 @@ export async function getXmlProducts() {
   console.log("[XML] 3. After parse:", JSON.stringify(doc, null, 2));
 
   // 4. Supplier's fields → our fields, text → number
-  const products: Product[] = doc.katalog.produkt.map((p) => ({
-    sku: p["@_artNr"],
-    name: p.benamning,
-    description: "Imported from supplier",
-    price: toNumber(p.pris["#text"]),
-    image: "placeholder.jpg",
-  }));
-  console.log("[XML] 4. Our model:", products);
+  const products: Product[] = [];
+  const skipped: SkippedProduct[] = [];
 
-  return { text, parsed: doc, products };
+  for (const p of doc.katalog.produkt) {
+    const candidate = {
+      sku: p["@_artNr"],
+      name: p.benamning,
+      description: "Imported from supplier",
+      price: toNumber(p.pris["#text"]),
+      image: "product-placeholder.jpg",
+    };
+
+    const result = ProductSchema.safeParse(candidate);
+
+    if (result.success) {
+      products.push(result.data);
+    } else {
+      skipped.push({
+        sku: p["@_artNr"],
+        reason: result.error.issues[0].message,
+      });
+    }
+  }
+
+  return { text, parsed: doc, products, skipped };
 }

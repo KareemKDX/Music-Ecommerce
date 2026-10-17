@@ -23,7 +23,15 @@ router.get("/csv", async (req, res) => {
 
 router.get("/xml", async (req, res) => {
   const result = await getXmlProducts();
-  res.json(req.query.debug ? result : result.products);
+
+  if (req.query.debug) {
+    res.json(result);
+  } else {
+    res.json({
+      products: result.products,
+      skipped: result.skipped,
+    });
+  }
 });
 
 export default router;

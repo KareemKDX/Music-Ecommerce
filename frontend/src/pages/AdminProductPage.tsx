@@ -18,6 +18,7 @@ function AdminPage() {
   );
   const [skippedProducts, setSkippedProducts] = useState<SkippedProduct[]>([]);
   const [isImported, setIsImported] = useState(false);
+  const [formatType, setFormatType] = useState("");
   // const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -41,10 +42,11 @@ function AdminPage() {
       const response = await api.get("/import/" + format);
 
       const importedData: ImportedProduct[] = response.data.products;
-      const skippedData: SkippedProduct[] = response.data.skipped;
-
+      const skippedData: SkippedProduct[] = response.data.skipped ?? [];
+      console.log(skippedData);
       setImportedProducts(importedData);
       setSkippedProducts(skippedData);
+      setFormatType(format);
       setIsImported(true);
     } catch (error) {
       console.error(error);
@@ -63,52 +65,69 @@ function AdminPage() {
     }
   }
 
+  function handleCloseImport() {
+    setIsImported(false);
+  }
+
   return (
     <div className="admin-page">
       <div className="admin-header-content">
-        <h1>Admin Dashboard</h1>
+        <div>
+          <h1>Admin Dashboard</h1>
+
+          <p className="admin-subtitle">Manage products and supplier imports</p>
+          <Link to="/admin" className="back-link">
+            <span className="back-link-arrow">←</span>
+            Back to dashboard
+          </Link>
+        </div>
       </div>
 
-      <div className="ADDLATER">
-        <div className="admin-product-container">
-          <div className="admin-product-header-box">
-            <h2>Products</h2>
-            <p>Manage our products</p>
+      <div className="admin-product-container">
+        <div className="admin-product-header-box">
+          <h2>Products ({products.length})</h2>
 
+          <div className="admin-actions">
+            <button
+              className={
+                isImported ? "outline-button inactive" : "outline-button"
+              }
+              onClick={() => importProducts("csv")}
+            >
+              Import from Supplier CSV
+            </button>
+            <button
+              className={
+                isImported ? "outline-button inactive" : "outline-button"
+              }
+              onClick={() => importProducts("xml")}
+            >
+              Import from Supplier XML
+            </button>
             <Link className="primary-button" to="/admin/product/create">
               + Create New Product
             </Link>
-            <button
-              className="primary-button"
-              onClick={() => importProducts("csv")}
-            >
-              Import from CSV +
-            </button>
-
-            <button
-              className="primary-button"
-              onClick={() => importProducts("xml")}
-            >
-              Import from XML +
-            </button>
           </div>
+        </div>
 
-          {isImported && (
-            <ImportProduct
-              importedProducts={importedProducts}
-              skippedProducts={skippedProducts}
+        {isImported && <button onClick={handleCloseImport}>Close</button>}
+
+        {isImported && (
+          <ImportProduct
+            importedProducts={importedProducts}
+            skippedProducts={skippedProducts}
+            formatType={formatType}
+          />
+        )}
+
+        <div className="product-container">
+          {products.map((product) => (
+            <AdminProductCard
+              key={product.id}
+              product={product}
+              deleteProduct={deleteProduct}
             />
-          )}
-
-          <div className="product-container">
-            {products.map((product) => (
-              <AdminProductCard
-                key={product.id}
-                product={product}
-                deleteProduct={deleteProduct}
-              />
-            ))}
-          </div>
+          ))}
         </div>
       </div>
     </div>
