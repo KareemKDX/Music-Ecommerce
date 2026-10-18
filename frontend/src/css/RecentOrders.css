@@ -1,0 +1,33 @@
+.recent-orders {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.recent-order-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+  color: var(--color-text-dark);
+  border-radius: var(--radius-small);
+}
+
+.recent-order-row:hover {
+  background: #f9fafb;
+}
+
+.recent-order-id {
+  font-weight: 600;
+}
+
+.recent-order-status {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.recent-orders-empty {
+  margin-top: 1rem;
+  color: #6b7280;
+}

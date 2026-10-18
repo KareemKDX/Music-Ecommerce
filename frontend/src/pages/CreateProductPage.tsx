@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/api";
 import "../css/CreateProductPage.css";
+import { Link } from "react-router-dom";
 
 function CreateProductPage() {
   const navigate = useNavigate();
@@ -36,72 +37,87 @@ function CreateProductPage() {
   }
 
   return (
-    <div className="forms-page-container">
-      <div className="create-product-header">
-        <h1>Fill in form to create a new product</h1>
+    <div className="admin-page">
+      <div className="admin-header-content">
+        <div>
+          <h1>Admin Dashboard</h1>
+
+          <p className="admin-subtitle">
+            Overview and status of customer orders
+          </p>
+          <Link to="/admin" className="back-link">
+            <span className="back-link-arrow">←</span>
+            Back to dashboard
+          </Link>
+        </div>
       </div>
-
-      <form className="form-card" onSubmit={createProduct}>
-        <div className="form-group">
-          <label htmlFor="name">Namn</label>
-
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-          />
+      <div className="forms-page-container">
+        <div className="create-product-header">
+          <h1>Fill in form to create a new product</h1>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="description">Beskrivning</label>
+        <form className="form-card" onSubmit={createProduct}>
+          <div className="form-group">
+            <label htmlFor="name">Namn</label>
 
-          <textarea
-            id="description"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            required
-          />
-        </div>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="price">Pris</label>
+          <div className="form-group">
+            <label htmlFor="description">Beskrivning</label>
 
-          <input
-            id="price"
-            type="number"
-            min="0"
-            value={price}
-            onChange={(event) => setPrice(Number(event.target.value))}
-            required
-          />
-        </div>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="image">Bild</label>
+          <div className="form-group">
+            <label htmlFor="price">Pris</label>
 
-          <input
-            id="image"
-            type="text"
-            value={image}
-            onChange={(event) => setImage(event.target.value)}
-            required
-          />
-        </div>
+            <input
+              id="price"
+              type="number"
+              min="0"
+              value={price}
+              onChange={(event) => setPrice(Number(event.target.value))}
+              required
+            />
+          </div>
 
-        <button className="primary-button" type="submit">
-          Skapa produkt
-        </button>
+          <div className="form-group">
+            <label htmlFor="image">Bild</label>
 
-        <button
-          className="delete-button"
-          type="button"
-          onClick={() => navigate("/admin")}
-        >
-          Avbryt
-        </button>
-      </form>
+            <input
+              id="image"
+              type="text"
+              value={image}
+              onChange={(event) => setImage(event.target.value)}
+              required
+            />
+          </div>
+
+          <button className="primary-button" type="submit">
+            Skapa produkt
+          </button>
+
+          <button
+            className="delete-button"
+            type="button"
+            onClick={() => navigate("/admin")}
+          >
+            Avbryt
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

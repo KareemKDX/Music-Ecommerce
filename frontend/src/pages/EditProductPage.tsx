@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Product } from "../types/Product";
 import "../css/EditProductPage.css";
+import { Link } from "react-router-dom";
 
 import api from "../axios/api";
 
@@ -53,87 +54,102 @@ function EditProductPage() {
   }
 
   return (
-    <div className="forms-page-container">
-      <div className="edit-product-header">
-        <h1>Redigera produkt</h1>
+    <div className="admin-page">
+      <div className="admin-header-content">
+        <div>
+          <h1>Admin Dashboard</h1>
+
+          <p className="admin-subtitle">
+            Overview and status of customer orders
+          </p>
+          <Link to="/admin" className="back-link">
+            <span className="back-link-arrow">←</span>
+            Back to dashboard
+          </Link>
+        </div>
       </div>
-
-      <form className="form-card" onSubmit={updateProduct}>
-        <div className="form-group">
-          <label htmlFor="name">Namn</label>
-
-          <input
-            id="name"
-            type="text"
-            value={product.name}
-            onChange={(event) =>
-              setProduct({
-                ...product,
-                name: event.target.value,
-              })
-            }
-          />
+      <div className="forms-page-container">
+        <div className="edit-product-header">
+          <h1>Redigera produkt</h1>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="description">Beskrivning</label>
+        <form className="form-card" onSubmit={updateProduct}>
+          <div className="form-group">
+            <label htmlFor="name">Namn</label>
 
-          <textarea
-            id="description"
-            value={product.description}
-            onChange={(event) =>
-              setProduct({
-                ...product,
-                description: event.target.value,
-              })
-            }
-          />
-        </div>
+            <input
+              id="name"
+              type="text"
+              value={product.name}
+              onChange={(event) =>
+                setProduct({
+                  ...product,
+                  name: event.target.value,
+                })
+              }
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="price">Pris</label>
+          <div className="form-group">
+            <label htmlFor="description">Beskrivning</label>
 
-          <input
-            id="price"
-            type="number"
-            value={product.price}
-            onChange={(event) =>
-              setProduct({
-                ...product,
-                price: Number(event.target.value),
-              })
-            }
-          />
-        </div>
+            <textarea
+              id="description"
+              value={product.description}
+              onChange={(event) =>
+                setProduct({
+                  ...product,
+                  description: event.target.value,
+                })
+              }
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="image">Bild</label>
+          <div className="form-group">
+            <label htmlFor="price">Pris</label>
 
-          <input
-            id="image"
-            type="text"
-            value={product.image}
-            onChange={(event) =>
-              setProduct({
-                ...product,
-                image: event.target.value,
-              })
-            }
-          />
-        </div>
+            <input
+              id="price"
+              type="number"
+              value={product.price}
+              onChange={(event) =>
+                setProduct({
+                  ...product,
+                  price: Number(event.target.value),
+                })
+              }
+            />
+          </div>
 
-        <button className="primary-button" type="submit">
-          Spara ändringar
-        </button>
+          <div className="form-group">
+            <label htmlFor="image">Bild</label>
 
-        <button
-          className="delete-button"
-          type="button"
-          onClick={() => navigate("/admin")}
-        >
-          Avbryt
-        </button>
-      </form>
+            <input
+              id="image"
+              type="text"
+              value={product.image}
+              onChange={(event) =>
+                setProduct({
+                  ...product,
+                  image: event.target.value,
+                })
+              }
+            />
+          </div>
+
+          <button className="primary-button" type="submit">
+            Spara ändringar
+          </button>
+
+          <button
+            className="delete-button"
+            type="button"
+            onClick={() => navigate("/admin")}
+          >
+            Avbryt
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

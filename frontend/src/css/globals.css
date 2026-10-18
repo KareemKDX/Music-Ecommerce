@@ -39,14 +39,6 @@ body {
   min-height: 100vh;
 }
 
-.forms-page-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  flex-wrap: wrap;
-}
-
 button {
   font: inherit;
 }
