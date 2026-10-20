@@ -11,6 +11,7 @@ import adminRouter from "./routes/admin-routes";
 import cors from "cors";
 import currencyRouter from "./routes/currency-routes";
 import importRouter from "./routes/imports";
+import searchRouter from "./routes/search";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/customer", customerRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/currency", currencyRouter);
 app.use("/api/import", importRouter);
+app.use("/api/search", searchRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend fungerar!");
