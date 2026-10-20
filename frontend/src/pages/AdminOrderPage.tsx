@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Orders from "../components/Orders";
-import api from "../axios/api";
+
 import "../css/AdminPage.css";
 import "../css/Products.css";
 

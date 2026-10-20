@@ -7,6 +7,8 @@ type ImportProductProps = {
   importedProducts: ImportedProduct[];
   skippedProducts: SkippedProduct[];
   formatType: string;
+  createdCount: number;
+  updatedCount: number;
 };
 
 const PAGE_SIZE = 10;
@@ -15,6 +17,8 @@ function ImportProduct({
   importedProducts,
   skippedProducts,
   formatType,
+  createdCount,
+  updatedCount,
 }: ImportProductProps) {
   const [page, setPage] = useState(1);
 
@@ -38,25 +42,37 @@ function ImportProduct({
 
   return (
     <div className="imported-products-card">
-      <p>
-        {importedProducts.length} produkter importerade från{" "}
-        {formatType.toUpperCase()}
-      </p>
-
-      <div className="skipped-table">
-        <p className="error-text">
-          Products with errors: {skippedProducts.length}
-        </p>
-
-        {skippedProducts.length > 0 && (
-          <p>
-            {skippedProducts.map((sProduct) => (
-              <p key={sProduct.sku}>
-                SKU: {sProduct.sku} Reason: {sProduct.reason}
-              </p>
-            ))}
+      <div className="imported-header-info-container">
+        <h2>IMPORT</h2>
+        <div className="import-count-view">
+          <div className="import-count-view-row">
+            <p>Total: {importedProducts.length} </p>
+          </div>
+          <div className="import-count-view-row">
+            <p>New: {createdCount} </p>
+          </div>
+          <div className="import-count-view-row">
+            <p>Updated: {updatedCount}</p>
+          </div>
+          <div className="import-count-view-row">
+            <p>From: {formatType.toUpperCase()}</p>
+          </div>
+        </div>
+        <div className="skipped-table">
+          <p className="error-text">
+            Products with errors: {skippedProducts.length}
           </p>
-        )}
+
+          {skippedProducts.length > 0 && (
+            <p>
+              {skippedProducts.map((sProduct) => (
+                <p key={sProduct.sku}>
+                  SKU: {sProduct.sku} Reason: {sProduct.reason}
+                </p>
+              ))}
+            </p>
+          )}
+        </div>
       </div>
 
       <table className="admin-table">
@@ -85,15 +101,15 @@ function ImportProduct({
       {totalPages > 1 && (
         <div className="pagination">
           <button onClick={goToPreviousPage} disabled={page === 1}>
-            Föregående
+            Back
           </button>
 
           <span>
-            Sida {page} av {totalPages}
+            Page {page} of {totalPages}
           </span>
 
           <button onClick={goToNextPage} disabled={page === totalPages}>
-            Nästa
+            Next
           </button>
         </div>
       )}

@@ -42,3 +42,28 @@
   font-size: 14px;
   color: #6b7280;
 }
+
+.import-count-view {
+  display: flex;
+}
+
+.import-count-view-row {
+  border-right: 1px solid whitesmoke;
+
+  margin-top: 10px;
+  margin-right: 5px;
+  padding: 5px;
+}
+
+.imported-header-info-container {
+  background-color: #272932;
+  border-radius: var(--radius-small);
+  padding: 10px;
+  color: white;
+}
+
+.skipped-table {
+  display: flex;
+  gap: 1rem;
+  padding: 5px 5px 3px;
+}

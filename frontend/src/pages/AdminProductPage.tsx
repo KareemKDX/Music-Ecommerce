@@ -6,6 +6,7 @@ import AdminProductCard from "../components/AdminProductCard";
 import "../css/AdminProductPage.css";
 import "../css/ImportedProduct.css";
 import ImportProduct from "../components/ImportProduct";
+import Loading from "../components/Loading";
 
 import api from "../axios/api";
 import "../css/AdminPage.css";
@@ -19,6 +20,11 @@ function AdminPage() {
   const [skippedProducts, setSkippedProducts] = useState<SkippedProduct[]>([]);
   const [isImported, setIsImported] = useState(false);
   const [formatType, setFormatType] = useState("");
+  const [updatedCount, setUpdatedCount] = useState(0);
+  const [createdCount, setCreatedCount] = useState(0);
+
+  const [loading, setLoading] = useState(false);
+
   // const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -38,6 +44,7 @@ function AdminPage() {
   }, []);
 
   async function importProducts(format: string) {
+    setLoading(true);
     try {
       const response = await api.get("/import/" + format);
 
@@ -47,9 +54,13 @@ function AdminPage() {
       setImportedProducts(importedData);
       setSkippedProducts(skippedData);
       setFormatType(format);
+      setCreatedCount(response.data.created);
+      setUpdatedCount(response.data.updated);
       setIsImported(true);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -112,11 +123,19 @@ function AdminPage() {
 
         {isImported && <button onClick={handleCloseImport}>Close</button>}
 
+        {loading && (
+          <div className="import-product-container">
+            <Loading />
+          </div>
+        )}
+
         {isImported && (
           <ImportProduct
             importedProducts={importedProducts}
             skippedProducts={skippedProducts}
             formatType={formatType}
+            updatedCount={updatedCount}
+            createdCount={createdCount}
           />
         )}
 
