@@ -4,7 +4,7 @@ import { Product } from "../types/Product";
 const APP_ID = process.env.ALGOLIA_APP_ID ?? "";
 const ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY ?? "";
 const SEARCH_KEY = process.env.ALGOLIA_SEARCH_KEY ?? "";
-const INDEX_NAME = process.env.ALGOLIA_INDEX ?? "walkthrough_products";
+const INDEX_NAME = process.env.ALGOLIA_INDEX ?? "products";
 
 /**
  *  --- 1. INDEX ---
@@ -47,15 +47,14 @@ export async function indexProducts(products: Product[]) {
 }
 
 // Removes products from Algolia, e.g. when they are deleted in the shop.
-// Otherwise the search still finds products that no longer exist.
+
 export async function removeProducts(skus: string[]) {
-  // Our sku is Algolia's objectID, so we can send the skus as they are.
-  // Code example beneith from the following docs: https://www.algolia.com/doc/guides/sending-and-managing-data/send-and-update-your-data/how-to/incremental-updates#delete-records
-  // 0769451881
-  // const response: BatchResponse[] = await client.deleteObjects({
-  //   indexName: 'INDEX_NAME',
-  //   objectIDs: ['1', '2'],
-  // });
+  await adminClient.deleteObjects({
+    indexName: INDEX_NAME,
+    objectIDs: skus,
+  });
+
+  return skus.length;
 }
 
 /**

@@ -101,7 +101,7 @@ function CreateProductPage() {
               type="text"
               value={image}
               onChange={(event) => setImage(event.target.value)}
-              required
+              placeholder="Leave empty for default image"
             />
           </div>
 

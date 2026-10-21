@@ -97,9 +97,8 @@ adminRouter.post("/products", async (req, res) => {
   const newProduct: Product = {
     sku: "LEV-1009",
     name: "Vit strumpor",
-    category: "Strumpor",
+    image: "Strumpor",
     price: 29,
-    stock: 33,
     description: "Mjuk strumpor i ekologisk bomull.",
   };
 
@@ -120,10 +119,9 @@ adminRouter.put("/products/:sku", async (req, res) => {
   const updatedProduct: Product = {
     sku: req.params.sku, // e.g. LEV-1009, the product we created above
     name: "Vita strumpor - updated",
-    category: "Strumpor",
     price: 39, // new price
-    stock: 20, // new stock
     description: "Mjuka strumpor i ekologisk bomull.",
+    image: "Image",
   };
 
   // Same order as for create:

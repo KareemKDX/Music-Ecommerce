@@ -22,6 +22,7 @@ function AdminPage() {
   const [formatType, setFormatType] = useState("");
   const [updatedCount, setUpdatedCount] = useState(0);
   const [createdCount, setCreatedCount] = useState(0);
+  const [deleteMessage, setDeleteMessage] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -67,10 +68,18 @@ function AdminPage() {
   //REMOVE FROM DATABASE
   async function deleteProduct(id: number) {
     try {
-      await api.delete("/products/" + id);
+      const response = await api.delete("/products/" + id);
+      console.log(response);
 
       // REMOVE FROM UI
       setProducts((prev) => prev.filter((product) => product.id !== id));
+      if (response.data.searchIndexed === false) {
+        setDeleteMessage(
+          "Produkten är borttagen, men sökindexet är inte uppdaterat.",
+        );
+      } else {
+        setDeleteMessage("Product deleted from both Agolia and Database.");
+      }
     } catch (error) {
       console.error("Error deleting product", error);
     }
@@ -138,7 +147,12 @@ function AdminPage() {
             createdCount={createdCount}
           />
         )}
-
+        {deleteMessage && (
+          <div className="delete-popup">
+            {deleteMessage}
+            <button onClick={() => setDeleteMessage("")}>×</button>
+          </div>
+        )}
         <div className="product-container">
           {products.map((product) => (
             <AdminProductCard
