@@ -1,5 +1,6 @@
 import { algoliasearch } from "algoliasearch";
 import { Product } from "../types/Product";
+import { z } from "zod";
 
 const APP_ID = process.env.ALGOLIA_APP_ID ?? "";
 const ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY ?? "";
@@ -9,6 +10,15 @@ const INDEX_NAME = process.env.ALGOLIA_INDEX ?? "products";
 /**
  *  --- 1. INDEX ---
  */
+
+const AlgoliaHitSchema = z.object({
+  objectID: z.string(),
+  id: z.number().optional(),
+  name: z.string(),
+  description: z.string(),
+  price: z.number(),
+  image: z.string(),
+});
 
 const adminClient = algoliasearch(APP_ID, ADMIN_KEY);
 // How a product looks in Algolia: the same fields, but the id must be called objectID.
@@ -68,29 +78,36 @@ type SearchParams = {
   page: number;
   pageSize: number;
 };
-export async function searchProducts(searchText: string) {
-  // We are only sending in the searchText through ?q=
-  // But we can send in lots of params through querystring to make the searchresult much more functional with filters and pagination
-  const params: SearchParams = {
-    query: searchText,
-    page: 5,
-    pageSize: 2,
-  };
 
-  // 1. Ask Algolia. Typos are forgiven: "hodie" finds "Hoodie".
-  const response = await searchClient.searchSingleIndex<AlgoliaRecord>({
+export async function searchProducts(
+  searchText: string,
+  page: number,
+  pageSize: number,
+) {
+  // ASK AGOLIA
+  const response = await searchClient.searchSingleIndex({
     indexName: INDEX_NAME,
     searchParams: {
-      query: params.query,
-      page: params.page - 1, // Algolia counts from 0, and we count from 1
-      hitsPerPage: params.pageSize,
+      query: searchText,
+      page: page - 1, //count from 1
+      hitsPerPage: pageSize,
     },
   });
 
-  // 2. Algolia's model → our model. objectID becomes sku again.
+  //VALIDATE SEARCHES BEFORE USE
+  const parsedHits = z.array(AlgoliaHitSchema).safeParse(response.hits);
+
+  if (parsedHits.success === false) {
+    throw new Error(
+      "Unexpected response from Algolia: " + parsedHits.error.message,
+    );
+  }
+
+  // MAP ALGOLIA MODEL -> OUR MODEL
   const products: Product[] = [];
-  for (const hit of response.hits) {
+  for (const hit of parsedHits.data) {
     products.push({
+      id: hit.id,
       sku: hit.objectID,
       name: hit.name,
       description: hit.description,
@@ -100,13 +117,14 @@ export async function searchProducts(searchText: string) {
   }
 
   const total = response.nbHits ?? 0;
+
   return {
     data: products,
     meta: {
-      page: params.page,
-      pageSize: params.pageSize,
+      page: page,
+      pageSize: pageSize,
       total: total,
-      totalPages: Math.ceil(total / params.pageSize),
+      totalPages: Math.ceil(total / pageSize),
     },
   };
 }

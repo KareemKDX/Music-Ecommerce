@@ -3,8 +3,9 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.5rem;
   box-sizing: border-box;
-  width: 100%;
+  max-width: 1800px;
   padding: 2rem;
+  margin: 0 auto;
 }
 .product-card {
   border-radius: var(--radius-small);
@@ -39,6 +40,35 @@
   height: 100%;
   width: 100%;
   object-fit: contain;
+}
+.search-container {
+  background-color: var(--color-text-dark);
+}
+
+.search-form {
+  display: flex;
+  gap: 10px;
+  max-width: 600px;
+
+  padding: 1rem;
+}
+
+.search-form input {
+  flex: 1;
+}
+
+.search-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #6b7280;
+}
+
+.search-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 1.5rem;
 }
 
 @media (max-width: 1200px) {

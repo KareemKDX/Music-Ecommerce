@@ -11,8 +11,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-
-  background-color: #d19c1d;
+  background-color: var(--color-text-dark);
   color: #222;
 }
 
@@ -32,11 +31,11 @@ body {
 }
 
 .page-container {
-  background-color: white;
-  padding-top: 80px;
   max-width: 2000px;
   margin: 0 auto;
   min-height: 100vh;
+  border: 2px solid var(--color-text-dark);
+  background-color: white;
 }
 
 button {

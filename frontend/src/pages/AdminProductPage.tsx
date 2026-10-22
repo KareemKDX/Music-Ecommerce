@@ -7,6 +7,7 @@ import "../css/AdminProductPage.css";
 import "../css/ImportedProduct.css";
 import ImportProduct from "../components/ImportProduct";
 import Loading from "../components/Loading";
+import ActionPopup from "../components/ActionPopup";
 
 import api from "../axios/api";
 import "../css/AdminPage.css";
@@ -148,10 +149,10 @@ function AdminPage() {
           />
         )}
         {deleteMessage && (
-          <div className="delete-popup">
-            {deleteMessage}
-            <button onClick={() => setDeleteMessage("")}>×</button>
-          </div>
+          <ActionPopup
+            message={deleteMessage}
+            onClose={() => setDeleteMessage("")}
+          />
         )}
         <div className="product-container">
           {products.map((product) => (

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../axios/api";
 import "../css/CreateProductPage.css";
 import { Link } from "react-router-dom";
+import ActionPopup from "../components/ActionPopup";
+import Loading from "../components/Loading";
 
 function CreateProductPage() {
   const navigate = useNavigate();
@@ -11,9 +13,12 @@ function CreateProductPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [image, setImage] = useState("");
+  const [createdMessage, setCreatedMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function createProduct(event: React.SubmitEvent) {
     event.preventDefault();
+    setLoading(true);
 
     try {
       //POST NEW PRODUCT TO DATABASE
@@ -28,16 +33,25 @@ function CreateProductPage() {
           },
         },
       );
+      setCreatedMessage("Product created");
 
       // NAVIGATE TO ADMIN PAGE IF EVERYTHING OK
-      navigate("/admin");
+      //  navigate("/admin");
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div className="admin-page">
+      {createdMessage && (
+        <ActionPopup
+          message={createdMessage}
+          onClose={() => setCreatedMessage("")}
+        />
+      )}
       <div className="admin-header-content">
         <div>
           <h1>Admin Dashboard</h1>
@@ -53,10 +67,14 @@ function CreateProductPage() {
       </div>
       <div className="forms-page-container">
         <div className="create-product-header">
-          <h1>Fill in form to create a new product</h1>
+          <h3>Fill in form to create a new product</h3>
         </div>
+        {loading && <Loading />}
 
-        <form className="form-card" onSubmit={createProduct}>
+        <form
+          className={loading ? "form-card inactive" : "form-card"}
+          onSubmit={createProduct}
+        >
           <div className="form-group">
             <label htmlFor="name">Namn</label>
 

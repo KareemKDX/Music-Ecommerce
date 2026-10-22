@@ -23,7 +23,7 @@ const orderRouter = Router();
 
 orderRouter.post("/", authenticateJWT, async (req, res) => {
   try {
-    const userId = req.user!.userId; // TEMPORARY SOLUTION. CUSTOMER WITH ID 4
+    const userId = req.user!.userId;
     const { shippingAddress } = req.body;
 
     if (!shippingAddress) {

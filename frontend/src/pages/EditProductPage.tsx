@@ -70,7 +70,7 @@ function EditProductPage() {
       </div>
       <div className="forms-page-container">
         <div className="edit-product-header">
-          <h1>Redigera produkt</h1>
+          <h3>Redigera produkt</h3>
         </div>
 
         <form className="form-card" onSubmit={updateProduct}>

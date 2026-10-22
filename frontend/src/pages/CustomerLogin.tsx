@@ -30,48 +30,50 @@ function CustomerLogin() {
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-box-left">
-          <div className="login-header">
-            <h1>Customer Login</h1>
-            <p>Sign in to continue</p>
+      <div className="login-container">
+        <div className="login-card">
+          <div className="login-box-left">
+            <div className="login-header">
+              <h1>Customer Login</h1>
+              <p>Sign in to continue</p>
+            </div>
           </div>
-        </div>
-        <div className="login-box-right">
-          <div className="input-group">
-            <form onSubmit={handleLogin}>
-              <div>
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+          <div className="login-box-right">
+            <div className="input-group">
+              <form onSubmit={handleLogin}>
+                <div>
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="password">Lösenord</label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
+                <div>
+                  <label htmlFor="password">Lösenord</label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <button className="login-btn " type="submit">
-                Logga in
-              </button>
-            </form>
-            <NavLink className="admin-login-btn" to="/admin/login">
-              Are you an admin? Press here to login.
-            </NavLink>
+                <button className="login-btn " type="submit">
+                  Logga in
+                </button>
+              </form>
+              <NavLink className="admin-login-btn" to="/admin/login">
+                Are you an admin? Press here to login.
+              </NavLink>
+            </div>
+
+            {error && <p>{error}</p>}
           </div>
-
-          {error && <p>{error}</p>}
         </div>
       </div>
     </div>

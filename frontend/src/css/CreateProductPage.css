@@ -13,6 +13,8 @@
   border-start-start-radius: 50px;
 }
 
-.create-product-header h1 {
+.create-product-header h1,
+.create-product-header h2,
+.create-product-header h3 {
   color: var(--color-text);
 }
