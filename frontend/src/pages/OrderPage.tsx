@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import CartContext from "../context/CartContext";
 import "../css/OrderPage.css";
-import { useNavigate } from "react-router-dom";
+
 import api from "../axios/api";
 
 function OrderPage() {
@@ -10,43 +10,41 @@ function OrderPage() {
   const [email, setEmail] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
 
+  const [checkoutError, setCheckoutError] = useState("");
+  const [paying, setPaying] = useState(false);
+
   if (!context) {
     throw new Error("Context error in OrderPage.tsx");
   }
 
-  const { cart, setCart } = context;
-  const navigate = useNavigate();
+  const { cart } = context;
 
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
 
-  async function handleSubmit(event: React.SubmitEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    setCheckoutError("");
+    setPaying(true);
 
     try {
-      const response = await api.post("/orders", {
-        shippingAddress,
-        items: cart.map((item) => ({
-          productId: item.product_id,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-      });
+      const response = await api.post("/checkout/hosted", { shippingAddress });
 
-      console.log("Order created:", response.data);
-
-      // CLEAN CART FROM UI
-      setCart([]);
-      navigate("/");
-    } catch (error) {
-      console.error("Couldn't create order:", error);
+      // SEND CUSTOMER TO STRIPE
+      window.location.href = response.data.url;
+    } catch (error: any) {
+      const message = error.response?.data?.error;
+      setCheckoutError(
+        message ?? "Could not start the payment. Try again later.",
+      );
+      setPaying(false);
     }
   }
 
   return (
-    <div className = "order-page">
+    <div className="order-page">
       <h1>Checkout</h1>
 
       <div className="order-container">
@@ -72,7 +70,7 @@ function OrderPage() {
               ))}
 
               <div className="order-total">
-                <span>Totalt</span>
+                <span>Total:</span>
                 <strong>{cartTotal} kr</strong>
               </div>
             </>
@@ -106,7 +104,11 @@ function OrderPage() {
               required
             />
 
-            <button type="submit">Lägg beställning</button>
+            {checkoutError && <p className="error-text">{checkoutError}</p>}
+
+            <button type="submit" disabled={paying || cart.length === 0}>
+              {paying ? "Redirecting to payment..." : "Pay with card"}
+            </button>
           </form>
         </section>
       </div>

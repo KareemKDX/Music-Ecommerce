@@ -12,9 +12,12 @@ import cors from "cors";
 import currencyRouter from "./routes/currency-routes";
 import importRouter from "./routes/imports";
 import searchRouter from "./routes/search";
+import checkoutRouter from "./routes/checkout";
+import webhookRouter from "./routes/webhook";
 
 const app = express();
 
+app.use("/api/stripe/webhook", webhookRouter);
 app.use(express.json());
 app.use(cors());
 
@@ -26,6 +29,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/currency", currencyRouter);
 app.use("/api/import", importRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/checkout", checkoutRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend fungerar!");

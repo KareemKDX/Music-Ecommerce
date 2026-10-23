@@ -21,6 +21,49 @@ interface OrderItem {
 
 const orderRouter = Router();
 
+// FIND CUSTOMER ORDER THROOUGH STRIPE SESSION ID
+orderRouter.get("/by-session", authenticateJWT, async (req, res) => {
+  try {
+    const userId = req.user!.userId;
+    const sessionId = req.query.session_id;
+
+    if (typeof sessionId !== "string" || sessionId === "") {
+      return res.status(400).json({ message: "session_id is required" });
+    }
+
+    // USER CAN ONLY SEE ITS OWN ORDER BY USERID AND SESSION ID
+    const [orderRows] = await pool.execute(
+      `SELECT id, payment_status, status, shipping_address, created_at
+       FROM orders
+       WHERE stripe_session_id = ? AND user_id = ?`,
+      [sessionId, userId],
+    );
+
+    const found = orderRows as any[];
+
+    if (found.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const order = found[0];
+
+    const [itemRows] = await pool.execute(
+      `SELECT id, product_name, quantity, price
+       FROM order_items
+       WHERE order_id = ?`,
+      [order.id],
+    );
+
+    res.json({ ...order, items: itemRows });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Could not fetch the order" });
+  }
+});
+
+//IMPORTANT!!!
+//THIS FILE IS NOT IN USE. (CHANGED TO STRIPE PAYMENT/ORDER METHOD in payment-adapter.ts)
+/*
 orderRouter.post("/", authenticateJWT, async (req, res) => {
   try {
     const userId = req.user!.userId;
@@ -270,5 +313,6 @@ orderRouter.get("/:id/items", authenticateJWT, async (req, res) => {
     });
   }
 });
+*/
 
 export default orderRouter;

@@ -1,4 +1,4 @@
-#  E-SHOP — Music Equipment Store
+# E-SHOP — Music Equipment Store
 
 A full-stack e-commerce web application built as a school project.
 The application allows customers to browse products, manage their shopping cart and place orders, while administrators can manage products and orders through an admin dashboard.
@@ -12,6 +12,8 @@ The application allows customers to browse products, manage their shopping cart 
 > The application uses Vercel for deployment and Aiven for the MySQL database.
 
 ---
+
+3rd party integrations: (FILL)
 
 ## Tech Stack
 
@@ -67,7 +69,7 @@ The application allows customers to browse products, manage their shopping cart 
 
 ---
 
-##  Project Structure
+## Project Structure
 
 ```text
 project/

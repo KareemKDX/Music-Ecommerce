@@ -18,6 +18,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./css/globals.css";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { CurrencyProvider } from "./context/CurrencyContext";
+import ReturnPage from "./pages/OrderReturnPage";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/account" element={<AccountPage />} />
               <Route path="/order" element={<OrderPage />} />
               <Route path="/login" element={<CustomerLogin />} />
+              <Route path="/return" element={<ReturnPage />} />
               //ADMIN, ROUTE TO ADMIN/LOGIN IF UNAUTHORIZED WITH PROTECTED ROUTE
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route
