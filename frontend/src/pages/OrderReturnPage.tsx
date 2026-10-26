@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import api from "../axios/api";
 import CartContext from "../context/CartContext";
+import "../css/OrderReturnPage.css";
 
 type ReturnOrder = {
   id: number;
@@ -87,39 +88,61 @@ function OrderReturnPage() {
 
   return (
     <div className="return-page">
-      {order.payment_status === "paid" && (
-        <>
-          <h1>Thank you for your order!</h1>
-          <p>Your payment went through.</p>
-        </>
-      )}
+      <div className="return-header">
+        {order.payment_status === "paid" && (
+          <>
+            <div className="return-icon return-icon-paid">✓</div>
+            <h1>Thank you for your order!</h1>
+            <p>Your payment went through.</p>
+          </>
+        )}
 
-      {order.payment_status === "unpaid" && (
-        <>
-          <h1>Confirming your payment...</h1>
-          <p>This usually takes a few seconds.</p>
-        </>
-      )}
+        {order.payment_status === "unpaid" && (
+          <>
+            <div className="return-icon return-icon-pending">…</div>
+            <h1>Confirming your payment...</h1>
+            <p>This usually takes a few seconds.</p>
+          </>
+        )}
 
-      {order.payment_status === "cancelled" && (
-        <>
-          <h1>The order was cancelled</h1>
-          <p>No payment was made.</p>
-        </>
-      )}
+        {order.payment_status === "cancelled" && (
+          <>
+            <div className="return-icon return-icon-cancelled">×</div>
+            <h1>The order was cancelled</h1>
+            <p>No payment was made.</p>
+          </>
+        )}
+      </div>
 
       <div className="return-order">
-        <h2>Order #{order.id}</h2>
-        <p>Payment status: {order.payment_status}</p>
-        <p>Shipping address: {order.shipping_address}</p>
+        <div className="return-order-top">
+          <h2>Order #{order.id}</h2>
+          <span
+            className={"return-status return-status-" + order.payment_status}
+          >
+            {order.payment_status}
+          </span>
+        </div>
 
-        {order.items.map((item) => (
-          <p key={item.id}>
-            {item.product_name} - {item.quantity} st - {item.price} kr
-          </p>
-        ))}
+        <p className="return-address">
+          Shipping address: {order.shipping_address}
+        </p>
 
-        <strong>Total: {total} kr</strong>
+        <div className="return-items">
+          {order.items.map((item) => (
+            <div className="return-item" key={item.id}>
+              <span>
+                {item.product_name} × {item.quantity}
+              </span>
+              <span>{item.price * item.quantity} kr</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="return-total">
+          <span>Total</span>
+          <strong>{total} kr</strong>
+        </div>
       </div>
 
       <Link className="primary-button" to="/">
@@ -128,5 +151,4 @@ function OrderReturnPage() {
     </div>
   );
 }
-
 export default OrderReturnPage;

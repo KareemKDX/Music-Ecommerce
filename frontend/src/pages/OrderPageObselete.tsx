@@ -4,6 +4,8 @@ import "../css/OrderPage.css";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/api";
 
+//IMPORTANT!!!
+//THIS COMPONENT IS NOT IN USE AND IS CHANGED WITH OrderPage.tsx
 function OrderPageObselete() {
   const context = useContext(CartContext);
   const [name, setName] = useState("");

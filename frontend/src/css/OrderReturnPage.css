@@ -1,0 +1,134 @@
+.return-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  margin-top: 150px;
+}
+
+.return-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.return-header h1 {
+  font-size: 1.8rem;
+  color: var(--color-text-dark);
+}
+
+.return-header p {
+  color: #6b7280;
+}
+
+.return-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  border-radius: 50%;
+}
+
+.return-icon-paid {
+  background: #16a34a;
+}
+
+.return-icon-pending {
+  background: var(--color-primary);
+}
+
+.return-icon-cancelled {
+  background: #b42318;
+}
+
+.return-order {
+  width: 100%;
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #ebe5d6;
+  border-radius: var(--radius-medium);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.return-order-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.return-order-top h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-dark);
+}
+
+.return-status {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+}
+
+.return-status-paid {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.return-status-unpaid {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.return-status-cancelled {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.return-address {
+  margin-bottom: 1rem;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.return-items {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #eee;
+}
+
+.return-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  color: var(--color-text-dark);
+}
+
+.return-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  font-size: 1.1rem;
+  color: var(--color-text-dark);
+}
+
+@media (max-width: 600px) {
+  .return-page {
+    padding: 2rem 1rem;
+  }
+}

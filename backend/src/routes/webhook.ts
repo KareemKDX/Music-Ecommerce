@@ -8,7 +8,7 @@ router.post(
   "/",
   express.raw({ type: "application/json" }),
   async (req, res) => {
-    // 1. Kontrollera att anropet kommer från Stripe
+    // VERIFY STRIPE SIGNATURE
     const signature = req.headers["stripe-signature"];
     if (typeof signature !== "string") {
       res.status(400).send("Missing Stripe-Signature");
