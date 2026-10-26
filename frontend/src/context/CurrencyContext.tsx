@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import api from "../axios/api";
 
 type Rates = {
   base: string;
@@ -23,13 +24,9 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function loadRates() {
       try {
-        const response = await fetch("/api/currency/rates?base=SEK");
+        const response = await api.get("/currency/rates?base=SEK");
+        const data = response.data;
 
-        if (!response.ok) {
-          throw new Error("Rates request failed: " + response.status);
-        }
-
-        const data = await response.json();
         setRates(data);
         setRatesError(false);
       } catch (error) {

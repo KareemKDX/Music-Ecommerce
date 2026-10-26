@@ -4,11 +4,9 @@ import { authenticateJWT } from "../authentication/authenticateJWT";
 
 const cartRouter = Router();
 
-//Hämta kart via userID
-
+//FETCH CART BY USER_ID
 cartRouter.get("/", authenticateJWT, async (req, res) => {
   try {
-    //Tillfälligt ID tills user funktionalitet implementeras
     const userId = req.user!.userId;
 
     const [rows] = await pool.execute(
