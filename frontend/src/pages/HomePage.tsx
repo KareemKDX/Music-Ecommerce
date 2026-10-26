@@ -14,6 +14,21 @@ function HomePage() {
           <img src="/Images/musicplate.jpg" alt="Music plate" />
         </div>
       </div>
+
+      <div className="products-header-info-area">
+        <div className="products-header-info-left">
+          <p className="products-subtitle"></p>
+        </div>
+
+        <div className="products-header-info-right">
+          <ul className="products-perks">
+            <li>Secure payment with Stripe</li>
+            <li>Prices in SEK, EUR and USD</li>
+            <li>Fast delivery</li>
+          </ul>
+        </div>
+      </div>
+
       <div>
         <Products />
       </div>

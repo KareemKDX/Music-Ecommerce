@@ -16,3 +16,10 @@
   color: white;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
+
+.admin-delete {
+  background-color: #92140c;
+}
+.admin-delete:hover {
+  background-color: red;
+}

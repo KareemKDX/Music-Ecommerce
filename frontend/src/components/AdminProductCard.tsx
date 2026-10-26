@@ -27,7 +27,12 @@ function AdminProductCard({
           Edit
         </button>
 
-        <button onClick={() => deleteProduct(product.id)}>Delete</button>
+        <button
+          className="admin-delete"
+          onClick={() => deleteProduct(product.id)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );
