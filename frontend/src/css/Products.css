@@ -8,17 +8,27 @@
   margin: 0 auto;
 }
 .product-card {
+  display: flex;
+  flex-direction: column;
   border-radius: var(--radius-small);
-
   padding: 20px;
   border: 1px solid #ddd;
   background-color: #fff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  box-sizing: border-box;
 }
 .product-card h4,
 .product-card p,
 .product-card h2 {
   color: var(--color-text-dark);
+}
+
+.product-actions {
+  display: flex;
+
+  margin-top: auto;
+  justify-content: end;
 }
 
 .product-card:hover {
@@ -34,6 +44,7 @@
   justify-content: center;
   overflow: hidden;
   border-bottom: 1px solid #e5e5e5;
+  flex-shrink: 0;
 }
 
 .product-image img {

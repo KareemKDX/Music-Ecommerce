@@ -64,11 +64,11 @@ function CustomerLogin() {
                 </div>
 
                 <button className="login-btn " type="submit">
-                  Logga in
+                  Login
                 </button>
               </form>
               <NavLink className="admin-login-btn" to="/admin/login">
-                Are you an admin? Press here to login.
+                Admin account? Press here to login.
               </NavLink>
             </div>
 

@@ -62,7 +62,7 @@ function EditProductPage() {
           <p className="admin-subtitle">
             Overview and status of customer orders
           </p>
-          <Link to="/admin" className="back-link">
+          <Link to="/admin/products" className="back-link">
             <span className="back-link-arrow">←</span>
             Back to dashboard
           </Link>

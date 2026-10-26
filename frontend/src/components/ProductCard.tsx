@@ -63,7 +63,7 @@ function ProductCard({ product }: { product: Product }) {
 
       <div className="product-actions">
         <button className="primary-button" onClick={handleAddToCart}>
-          Add to cart
+          {!isLoggedIn ? "Log in to purchase" : "Add to cart"}
         </button>
         <button
           className="secondary-button"

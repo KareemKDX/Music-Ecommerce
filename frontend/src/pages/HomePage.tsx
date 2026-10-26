@@ -8,7 +8,7 @@ function HomePage() {
         <div className="homepage-box">
           <h1>MUSIC CREATION AT IT'S FINEST</h1>
           <br></br>
-          <p>Samples. Instruments. Producer. We got it all.</p>
+          <p>Samples. Instruments. Equipment. We got it all.</p>
         </div>
         <div className="homepage-box">
           <img src="/Images/musicplate.jpg" alt="Music plate" />

@@ -3,9 +3,15 @@ import CartContext from "../context/CartContext";
 import "../css/Cart.css";
 import { useNavigate } from "react-router-dom";
 
+import { isTokenValid } from "../utils/isTokenValid";
+
 function Cart() {
   const context = useContext(CartContext);
   const navigate = useNavigate();
+
+  //Check User
+  const token = localStorage.getItem("token");
+  const isLoggedIn = isTokenValid(token);
 
   if (!context) {
     throw new Error("Context error in Cart.tsx");
@@ -22,7 +28,12 @@ function Cart() {
     <div className="cart-content">
       <h2>Shopping Cart</h2>
 
-      {cart.length === 0 ? (
+      {!isLoggedIn ? (
+        <div className="empty-cart">
+          <p>Please log in to view your shopping cart.</p>
+          <button onClick={() => navigate("/login")}>Login</button>
+        </div>
+      ) : cart.length === 0 ? (
         <p className="empty-cart">Shopping cart is empty</p>
       ) : (
         <>
@@ -36,8 +47,8 @@ function Cart() {
                     {item.price} kr × {item.quantity}
                   </p>
 
-                  <button> - </button>
-                  <button> + </button>
+                  <button>-</button>
+                  <button>+</button>
                 </div>
 
                 <button

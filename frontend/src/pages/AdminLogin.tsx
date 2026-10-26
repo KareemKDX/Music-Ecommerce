@@ -63,7 +63,7 @@ function AdminLogin() {
                 </div>
 
                 <button className="login-btn " type="submit">
-                  Logga in
+                  Login
                 </button>
               </form>
             </div>

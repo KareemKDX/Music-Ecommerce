@@ -7,6 +7,7 @@ import CurrencySelector from "./CurrencySelector";
 import { isTokenValid } from "../utils/isTokenValid";
 import { getTokenRole } from "../utils/getTokenRole";
 import { accountLogout } from "../utils/adminLogout";
+import { ShoppingCart } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
@@ -32,23 +33,20 @@ const Navbar: React.FC = () => {
         <div className="nav-left">
           <NavLink to="/" className="navbar-logo">
             <span className="logo-mark">S</span>
-            <span className="logo-text">SPEXAH Instruments</span>
+            <span className="logo-text">
+              SPEXAH<span className="logo-text-sub"> Instruments</span>
+            </span>
           </NavLink>
         </div>
 
-        <button
-          className={`navbar-toggle ${menuOpen ? "open" : ""}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle navigation"
+        <div
+          className={`navbar-links ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(false)}
         >
-          <span className="toggle-bar"></span>
-          <span className="toggle-bar"></span>
-          <span className="toggle-bar"></span>
-        </button>
-
-        <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
           <div className="nav-link-center">
-            <NavLink to="/">Products</NavLink>
+            <NavLink to="/" end>
+              Products
+            </NavLink>
             <NavLink to="/about">About</NavLink>
           </div>
 
@@ -67,33 +65,51 @@ const Navbar: React.FC = () => {
             )}
 
             {!isLoggedIn && (
-              <>
-                <NavLink className="login-btn-nav" to="/login">
-                  Login
-                </NavLink>
-              </>
+              <NavLink className="login-btn-nav" to="/login">
+                Login
+              </NavLink>
             )}
-
-            <CurrencySelector />
-
-            <div className="cart-wrapper">
-              <button
-                className="cart-button"
-                onClick={() => setCartOpen(!cartOpen)}
-              >
-                🛒
-                {cartAmount > 0 && (
-                  <span className="cart-count">{cartAmount}</span>
-                )}
-              </button>
-
-              {cartOpen && (
-                <div className="cart-dropdown">
-                  <Cart />
-                </div>
-              )}
-            </div>
           </div>
+        </div>
+
+        <div className="nav-actions">
+          <CurrencySelector />
+
+          <div className="cart-wrapper">
+            <button
+              className="cart-button"
+              onClick={() => {
+                setCartOpen(!cartOpen);
+                setMenuOpen(false);
+              }}
+              aria-label="Open cart"
+            >
+              <ShoppingCart size={22} strokeWidth={2} />
+              {cartAmount > 0 && (
+                <span className="cart-count">{cartAmount}</span>
+              )}
+            </button>
+
+            {cartOpen && (
+              <div className="cart-dropdown">
+                <Cart />
+              </div>
+            )}
+          </div>
+
+          <button
+            className={`navbar-toggle ${menuOpen ? "open" : ""}`}
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+              setCartOpen(false);
+            }}
+            aria-label="Toggle navigation"
+            aria-expanded={menuOpen}
+          >
+            <span className="toggle-bar"></span>
+            <span className="toggle-bar"></span>
+            <span className="toggle-bar"></span>
+          </button>
         </div>
       </div>
     </nav>
