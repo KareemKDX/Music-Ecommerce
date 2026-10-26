@@ -41,7 +41,7 @@ function CustomerLogin() {
           <div className="login-box-right">
             <div className="input-group">
               <form onSubmit={handleLogin}>
-                <div>
+                <div className="input-field-login">
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
@@ -52,7 +52,7 @@ function CustomerLogin() {
                   />
                 </div>
 
-                <div>
+                <div className="input-field-login">
                   <label htmlFor="password">Lösenord</label>
                   <input
                     id="password"

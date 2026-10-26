@@ -21,7 +21,7 @@ interface OrderItem {
 
 const orderRouter = Router();
 
-// FIND CUSTOMER ORDER THROOUGH STRIPE SESSION ID
+// FIND CUSTOMER ORDER THROUGH STRIPE SESSION ID
 orderRouter.get("/by-session", authenticateJWT, async (req, res) => {
   try {
     const userId = req.user!.userId;
@@ -169,6 +169,8 @@ orderRouter.post("/", authenticateJWT, async (req, res) => {
   }
 });
 
+*/
+
 //ADMIN ROUTES
 
 //GET ALL ORDERS WITH ORDER BY DATE TO SORT WITH LATEST
@@ -313,6 +315,5 @@ orderRouter.get("/:id/items", authenticateJWT, async (req, res) => {
     });
   }
 });
-*/
 
 export default orderRouter;

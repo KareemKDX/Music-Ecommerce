@@ -201,7 +201,6 @@ button:disabled {
 input,
 textarea,
 select {
-  width: 100%;
   padding: 11px 13px;
   border: 1px solid #d1d5db;
   border-radius: 8px;

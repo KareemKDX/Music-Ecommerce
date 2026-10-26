@@ -40,7 +40,7 @@ function AdminLogin() {
           <div className="login-box-right">
             <div className="input-group">
               <form onSubmit={handleLogin}>
-                <div>
+                <div className="input-field-login">
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
@@ -51,8 +51,8 @@ function AdminLogin() {
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="password">Lösenord</label>
+                <div className="input-field-login">
+                  <label htmlFor="password">Password</label>
                   <input
                     id="password"
                     type="password"
