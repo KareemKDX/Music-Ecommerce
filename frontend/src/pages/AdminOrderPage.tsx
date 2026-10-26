@@ -20,8 +20,9 @@ function AdminOrderPage() {
           </Link>
         </div>
       </div>
-
-      <Orders />
+      <div className="orders-content-area">
+        <Orders />
+      </div>
     </div>
   );
 }

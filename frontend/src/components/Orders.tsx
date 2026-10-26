@@ -40,45 +40,49 @@ function Orders() {
   return (
     <div>
       <div className="orders-container">
-        <h2>Customer Orders</h2>
+        <div className="orders-header-box">
+          <h2>Customer Orders</h2>
+        </div>
 
-        {orders.map((order) => (
-          <div className="order-card" key={order.id}>
-            <h3>Order Number: #{order.id}</h3>
+        <div className="orders-box">
+          {orders.map((order) => (
+            <div className="order-card" key={order.id}>
+              <h3>Order Number: #{order.id}</h3>
 
-            <h4>Customer-ID: {order.user_id}</h4>
+              <h4>Customer-ID: {order.user_id}</h4>
 
-            <div className="order-status">
-              <p>Order status: </p>
-              <select
-                className="order-status-dropdown"
-                value={order.status}
-                onChange={(e) =>
-                  handleOrderStatusChange(order.id, e.target.value)
-                }
-              >
-                <option value="Ordered">Ordered</option>
-                <option value="Processing">Processing</option>
-                <option value="Shipped">Shipped</option>
-                <option value="Delivered">Delivered</option>
-              </select>
+              <div className="order-status">
+                <p>Order status: </p>
+                <select
+                  className="order-status-dropdown"
+                  value={order.status}
+                  onChange={(e) =>
+                    handleOrderStatusChange(order.id, e.target.value)
+                  }
+                >
+                  <option value="Ordered">Ordered</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                </select>
+              </div>
+              <p>Datum: {order.created_at}</p>
+              <p>Shipping Adress: {order.shipping_address}</p>
+
+              <div className="order-items-box">
+                <h4>Order Items:</h4>
+
+                {order.items.map((item) => (
+                  <div key={item.id}>
+                    <p>
+                      {item.product_name} - {item.quantity} st - {item.price} kr
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-            <p>Datum: {order.created_at}</p>
-            <p>Shipping Adress: {order.shipping_address}</p>
-
-            <div className="order-items-box">
-              <h4>Order Items:</h4>
-
-              {order.items.map((item) => (
-                <div key={item.id}>
-                  <p>
-                    {item.product_name} - {item.quantity} st - {item.price} kr
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

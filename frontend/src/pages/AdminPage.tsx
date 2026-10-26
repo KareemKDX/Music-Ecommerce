@@ -36,7 +36,7 @@ function AdminPage() {
   return (
     <div className="admin-page">
       <div className="admin-header-content">
-        <div>
+        <div className="admin-main-menu-top-section">
           <h1>Admin Dashboard</h1>
           <p className="admin-subtitle">Overview of products and orders</p>
         </div>

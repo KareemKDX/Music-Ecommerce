@@ -118,17 +118,38 @@
     grid-template-columns: 1fr;
   }
 }
+.orders-content-area {
+  display: flex;
+  flex-direction: column;
 
+  padding: 30px;
+  max-width: 500px;
+  border-radius: var(--radius-medium);
+  gap: 5px;
+}
+.orders-header-box {
+  background-color: #f6e6b8;
+
+  padding: 30px;
+
+  border-radius: var(--radius-medium);
+}
 .orders-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+
+  gap: 1rem;
+}
+
+.orders-box {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
 }
 
 .order-card {
   background: #1e1e1e;
-  width: 100%;
+
   border: 1px solid #303030;
   border-radius: var(--radius-small);
   padding: 1rem;
@@ -174,11 +195,16 @@
   margin: 0;
 }
 
+.admin-main-menu-top-section {
+  margin-bottom: 44px;
+}
+
 .admin-header-content {
   margin-bottom: 2rem;
 }
 
 .admin-header-content h1 {
+  margin: 0;
   font-size: 2rem;
   color: var(--color-text-dark);
 }
