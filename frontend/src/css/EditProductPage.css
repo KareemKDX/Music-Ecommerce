@@ -7,3 +7,28 @@
 .edit-product-header h3 {
   color: var(--color-text);
 }
+
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-upload-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  padding: 12px;
+  background-color: #faf7f0;
+  border: 1px solid #ebe5d6;
+  border-radius: var(--radius-small);
+}
+
+.image-upload input[type="file"] {
+  padding: 8px;
+}
+
+.upload-success {
+  font-size: 14px;
+  color: #166534;
+}

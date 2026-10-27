@@ -7,4 +7,5 @@ export interface Product {
   image: string;
   created_at: string;
   stock?: number | null;
+  image_url?: string | null;
 }

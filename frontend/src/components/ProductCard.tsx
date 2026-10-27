@@ -51,7 +51,12 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <div className="product-card">
       <div className="product-image">
-        <img src={"/Images/" + product.image} alt={product.name} />
+        <img
+          src={
+            product.image_url ? product.image_url : "/Images/" + product.image
+          }
+          alt={product.name}
+        />
       </div>
 
       <div className="product-info">
