@@ -43,13 +43,13 @@ function ProductPage() {
   if (loading) {
     return (
       <div className="loading-page-height">
-        <Loading />;
+        <Loading />
       </div>
     );
   }
 
   if (!product) {
-    return <p className="product-loading">Loading...</p>;
+    return <p className="product-loading">Product not found.</p>;
   }
 
   function handleAddToCart() {
@@ -63,10 +63,29 @@ function ProductPage() {
     }
   }
 
+  // Stock label
+  let stockText = "";
+  let stockClass = "stock-in";
+  let soldOut = false;
+
+  if (product.stock === 0) {
+    stockText = "Out of stock";
+    stockClass = "stock-out";
+    soldOut = true;
+  } else if (product.stock !== undefined && product.stock !== null) {
+    if (product.stock <= 5) {
+      stockText = "Only " + product.stock + " left";
+      stockClass = "stock-low";
+    } else {
+      stockText = "In stock";
+    }
+  }
+
   return (
     <div className="product-page">
-      <button className="back-button" onClick={() => navigate("/")}>
-        ← Back to products
+      <button className="product-back-link" onClick={() => navigate("/")}>
+        <span className="product-back-arrow">←</span>
+        Back to products
       </button>
 
       <div className="product-details-card">
@@ -76,16 +95,43 @@ function ProductPage() {
 
         <div className="product-details-info">
           <p className="product-category">MUSIC EQUIPMENT</p>
+          <h1 className="product-details-info-h1">{product.name}</h1>
+          <div className="product-specs">
+            <div>
+              <p>Article no: {product.sku} </p>
+            </div>
 
-          <h1>{product.name}</h1>
+            <div>
+              <p>Category: Electronics</p>
+            </div>
+          </div>
+
+          {stockText !== "" && (
+            <p className={"product-stock " + stockClass}>{stockText}</p>
+          )}
 
           <p className="product-description">{product.description}</p>
 
-          <p className="product-details-price">{product.price} kr</p>
+          <div className="product-buy-row">
+            <p className="product-details-price">{product.price} kr</p>
 
-          <button className="add-product-button" onClick={handleAddToCart}>
-            Add to cart
-          </button>
+            <button
+              className="add-product-button"
+              onClick={handleAddToCart}
+              disabled={soldOut}
+            >
+              {soldOut
+                ? "Out of stock"
+                : !isLoggedIn
+                  ? "Log in to purchase"
+                  : "Add to cart"}
+            </button>
+          </div>
+          <ul className="product-perks">
+            <li>Secure payment with Stripe</li>
+            <li>Fast delivery</li>
+            <li>30 days return</li>
+          </ul>
         </div>
       </div>
     </div>

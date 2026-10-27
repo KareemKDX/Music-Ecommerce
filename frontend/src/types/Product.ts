@@ -6,4 +6,5 @@ export interface Product {
   price: number;
   image: string;
   created_at: string;
+  stock?: number | null;
 }
