@@ -24,7 +24,7 @@ adminRouter.post("/login", async (req, res) => {
       email: string;
     }[];
 
-    //IF NO FOUND
+    //IF NOT FOUND
     if (admins.length === 0) {
       return res.status(401).json({
         message: "Fel email eller lösenord",

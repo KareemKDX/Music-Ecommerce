@@ -4,7 +4,7 @@ import { authenticateJWT } from "../authentication/authenticateJWT";
 
 const cartRouter = Router();
 
-//FETCH CART BY USER_ID
+// FETCH CART BY USER_ID
 cartRouter.get("/", authenticateJWT, async (req, res) => {
   try {
     const userId = req.user!.userId;
@@ -35,14 +35,14 @@ cartRouter.get("/", authenticateJWT, async (req, res) => {
   }
 });
 
-//Lägg till produkt
+// ADD PRODUCT
 
 cartRouter.post("/", authenticateJWT, async (req, res) => {
   try {
     const userId = req.user!.userId;
     const { productId } = req.body;
 
-    // Kolla users varukorg
+    // CHECK USER CART
     const [carts] = await pool.execute(
       "SELECT id FROM carts WHERE user_id = ?",
       [userId],
@@ -58,7 +58,7 @@ cartRouter.post("/", authenticateJWT, async (req, res) => {
 
     const cartId = cartRows[0].id;
 
-    // Kolla om samma produkt redan finns i korgen
+    // CHECK IF PRODUCT ALREADY EXISTS IN CART
     const [items] = await pool.execute(
       `SELECT id, quantity
        FROM cart_items
@@ -72,7 +72,7 @@ cartRouter.post("/", authenticateJWT, async (req, res) => {
     }[];
 
     if (itemRows.length > 0) {
-      //Om produkt finns öka antal
+      // IF YES -> INCREASE
       await pool.execute(
         `UPDATE cart_items
          SET quantity = quantity + 1
@@ -80,7 +80,7 @@ cartRouter.post("/", authenticateJWT, async (req, res) => {
         [itemRows[0].id],
       );
     } else {
-      // Om inte finns lägg till ny produkt
+      // IF NO -> ADD NEW
       await pool.execute(
         `INSERT INTO cart_items (cart_id, product_id, quantity)
          VALUES (?, ?, ?)`,
@@ -100,7 +100,7 @@ cartRouter.post("/", authenticateJWT, async (req, res) => {
   }
 });
 
-//Delete
+//DELETE PRODUCT BY ID
 
 cartRouter.delete("/:productId", authenticateJWT, async (req, res) => {
   try {
