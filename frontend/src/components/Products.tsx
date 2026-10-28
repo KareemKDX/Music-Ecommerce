@@ -126,7 +126,7 @@ function Products() {
           {isSearching && (
             <button
               type="button"
-              className="outline-button"
+              className="outline-button-2"
               onClick={clearSearch}
             >
               Clear
