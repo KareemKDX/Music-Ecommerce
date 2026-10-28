@@ -13,8 +13,6 @@ The application allows customers to browse products, manage their shopping cart 
 
 ---
 
-3rd party integrations: (FILL)
-
 ## Tech Stack
 
 ### Frontend
@@ -35,6 +33,74 @@ The application allows customers to browse products, manage their shopping cart 
 - MySQL
 - mysql2
 - CORS
+
+### 3rd-party Integrations
+
+Postnord Shipping - Adapter and service created with help of AI.
+
+Manual control and documentation read before, so that AI input & code matches PostNords own documentation and is correct by giving providing Claude all API-endpoints URL:s and Request bodies. Manually checked and verified after implementation.
+
+- PROMPT
+
+- **Service points:** the customer enters a postal code and sees the nearest PostNord service points, fetched via our server. The server checks that the chosen service point is among those returned for that postal code.
+- **Delivery time:** checkout shows the estimated delivery from PostNord, from the shop's postal code to the customer's (e.g. "Estimated delivery: Tuesday 27/10").
+- **Shipping prices:** our own price list, two options (service point and home delivery), a fixed price each, and free shipping above an order value threshold. PostNord has no price API for Sweden.
+- **Server-side price:** the shipping price is calculated on the server and shown before payment. React never sends a price.
+- **Saved on the order:** shipping method, shipping price and service point. The shipping cost is its own line item in the Stripe Checkout Session.
+- **Validation:** all PostNord responses are validated with Zod before use.
+- **Common requirements:** calls go through the backend, one adapter per service, keys in `.env`, timeouts and error handling.
+
+Step 2 – Endpoints to use
+
+**Delivery time and date** (transit time, address to address):
+
+```
+GET https://api2.postnord.com/rest/transport/v2/transittime/addresstoaddress
+  ?apikey=<POSTNORD_API_KEY>
+  &startTime=2026-10-28T08:00
+  &originPostalCode=17173
+  &originCountryCode=SE
+  &destinationPostalCode=17173
+  &destinationCountryCode=SE
+  &showInternalAdditionalServiceCode=false
+```
+
+**Nearest service points:**
+
+```
+GET https://atapi2.postnord.com/rest/businesslocation/v5/servicepoints/nearest/byaddress
+  ?apikey=<POSTNORD_API_KEY>
+  &returnType=json
+  &countryCode=SE
+  &postalCode=11152
+  &numberOfServicePoints=5
+```
+
+Step 3 – Environment
+
+`POSTNORD_API_KEY` and `SHOP_POSTAL_CODE` are set in `backend/.env` and in the backend project on Vercel. The key lives only on the server. The orders table already has the new columns for shipping method, shipping price and service point, so only backend and frontend code is needed.
+
+Prompt to the AI (do not code yet)
+
+> Don't write code yet. First read the existing adapters in `backend/src/integrations/` and the checkout route, then give me a plan. Use the two endpoints in Step 2 and apply them to the requirements in Step 1.
+> Use `process.env.POSTNORD_API_KEY` and `process.env.SHOP_POSTAL_CODE`. Do not open or read `.env`.
+> For each endpoint, tell me which parts of the request and response you are sure about and which you are guessing, so I can verify them against PostNord's documentation.
+
+Currency selector (Frankfurter)
+
+`currency-adapter.ts` fetches exchange rates from Frankfurter through `fetchJson` (timeout and error handling) and validates them with Zod, including positive rates. React shows prices in SEK, EUR or USD. If the rates can't be fetched, prices fall back to SEK and the customer sees a short message.
+
+Search (Algolia)
+
+`search-adapter.ts` indexes products with the SKU as `objectID` and answers searches in the shop's own format. `GET /api/search` supports free text and pagination, validates parameters with Zod (invalid values give 400, with a maximum page size) and tolerates typos. The database is saved first, and Algolia is updated afterwards when products are imported, created, changed or deleted. If Algolia is down, the product is still saved and the admin is told that the search index is out of date. The admin key stays on the server.
+
+Payment
+
+`payment-adapter.ts` creates a hosted Stripe Checkout Session. React only sends the shipping address, and the server reads the cart and the prices from the database and checks the stock. The order is saved as unpaid before the customer is sent to Stripe, and its id follows the payment as `client_reference_id`. The webhook verifies Stripe's signature and marks the order as paid only once. It lowers the stock in the same database transaction, and `checkout.session.expired` cancels the order. The confirmation page only shows the order's status and never changes it.
+
+Image storage (Supabase Storage)
+
+`storage-adapter.ts` uploads product images to a public Supabase bucket
 
 ### Database & Deployment
 
