@@ -8,6 +8,17 @@ import {
 } from "../integrations/payment-adapter";
 import { pool } from "../mysql-database";
 import { authenticateJWT } from "../authentication/authenticateJWT";
+import {
+  getEstimatedDelivery,
+  getNearestServicePoints,
+  type ServicePoint,
+} from "../integrations/postnord-adapter";
+import {
+  calculateShipping,
+  SHIPPING_LABELS,
+  SHOP_POSTAL_CODE,
+} from "../services/shipping-service";
+import { PostalCode, ShippingMethod } from "./shipping-routes";
 
 const router = Router();
 
@@ -49,13 +60,52 @@ function createOrder(cart: CartType) {
 }
 
 /* --- HOSTED: POST /api/checkout/hosted  { items: [{ sku, quantity }] } → { url } --- */
+// React sends WHAT shipping the customer wants – never the price.
+const HostedCheckoutRequest = z
+  .object({
+    shippingAddress: z.string().trim().min(1, "Address has to be filled in"),
+    postalCode: PostalCode,
+    shippingMethod: ShippingMethod,
+    servicePointId: z.string().min(1).optional(),
+  })
+  .refine(
+    (body) => body.shippingMethod !== "service_point" || body.servicePointId,
+    { message: "Choose a service point" },
+  );
+
 router.post("/hosted", authenticateJWT, async (req, res) => {
   const userId = req.user!.userId;
-  const { shippingAddress } = req.body;
 
-  if (!shippingAddress || typeof shippingAddress !== "string") {
-    res.status(400).json({ error: "Address has to be filled in" });
+  const body = HostedCheckoutRequest.safeParse(req.body);
+  if (!body.success) {
+    res.status(400).json({ error: body.error.issues[0].message });
     return;
+  }
+  const { shippingAddress, postalCode, shippingMethod } = body.data;
+
+  // CHECK THAT THE CHOSEN SERVICE POINT IS ONE OF POSTNORD'S POINTS FOR THIS POSTAL CODE
+  let servicePoint: ServicePoint | null = null;
+  if (shippingMethod === "service_point") {
+    let servicePoints: ServicePoint[];
+    try {
+      servicePoints = await getNearestServicePoints(postalCode);
+    } catch (err) {
+      console.error("PostNord service points failed:", err);
+      res.status(502).json({
+        error:
+          "Could not fetch service points from PostNord. You can still choose home delivery.",
+      });
+      return;
+    }
+
+    servicePoint =
+      servicePoints.find((sp) => sp.id === body.data.servicePointId) ?? null;
+    if (!servicePoint) {
+      res
+        .status(400)
+        .json({ error: "Choose a service point near your postal code" });
+      return;
+    }
   }
 
   // FETCH CART AND NEEDED INFO FROM DB
@@ -85,6 +135,25 @@ router.post("/hosted", authenticateJWT, async (req, res) => {
     }
   }
 
+  // SHIPPING PRICE FROM OUR OWN PRICE LIST, BASED ON THE DB PRICES
+  let subtotal = 0;
+  for (const item of cartItems) {
+    subtotal += Number(item.price) * item.quantity;
+  }
+  const shippingPrice = calculateShipping(shippingMethod, subtotal);
+
+  // ESTIMATED DELIVERY IS NICE TO HAVE – THE ORDER IS CREATED EVEN IF POSTNORD FAILS
+  let estimatedDelivery: string | null = null;
+  try {
+    estimatedDelivery = await getEstimatedDelivery(
+      SHOP_POSTAL_CODE,
+      postalCode,
+      shippingMethod,
+    );
+  } catch (err) {
+    console.error("PostNord transit time failed:", err);
+  }
+
   // SAVE ORDER AND MARK AS 'PAID' IN DB
   const connection = await pool.getConnection();
   let orderId = 0;
@@ -93,8 +162,21 @@ router.post("/hosted", authenticateJWT, async (req, res) => {
     await connection.beginTransaction();
 
     const [orderResult] = await connection.execute(
-      "INSERT INTO orders (user_id, status, payment_status, shipping_address) VALUES (?, 'Ordered', 'unpaid', ?)",
-      [userId, shippingAddress],
+      `INSERT INTO orders (user_id, status, payment_status, shipping_address,
+         shipping_method, shipping_price, postal_code,
+         service_point_id, service_point_name, service_point_address, estimated_delivery)
+       VALUES (?, 'Ordered', 'unpaid', ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userId,
+        shippingAddress,
+        shippingMethod,
+        shippingPrice,
+        postalCode,
+        servicePoint?.id ?? null,
+        servicePoint?.name ?? null,
+        servicePoint?.address ?? null,
+        estimatedDelivery,
+      ],
     );
     orderId = (orderResult as { insertId: number }).insertId;
 
@@ -122,6 +204,15 @@ router.post("/hosted", authenticateJWT, async (req, res) => {
       name: item.name,
       price: Number(item.price),
       quantity: item.quantity,
+    });
+  }
+
+  // SHIPPING AS ITS OWN LINE IN STRIPE (FREE SHIPPING → NO LINE)
+  if (shippingPrice > 0) {
+    checkoutItems.push({
+      name: SHIPPING_LABELS[shippingMethod],
+      price: shippingPrice,
+      quantity: 1,
     });
   }
 

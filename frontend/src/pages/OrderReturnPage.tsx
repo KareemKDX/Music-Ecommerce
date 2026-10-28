@@ -3,11 +3,17 @@ import { Link, useSearchParams } from "react-router-dom";
 import api from "../axios/api";
 import CartContext from "../context/CartContext";
 import "../css/OrderReturnPage.css";
+import { formatDeliveryDate } from "../utils/formatDeliveryDate";
 
 type ReturnOrder = {
   id: number;
   payment_status: string;
   shipping_address: string;
+  shipping_method: "service_point" | "home" | null;
+  shipping_price: string | number;
+  service_point_name: string | null;
+  service_point_address: string | null;
+  estimated_delivery: string | null;
   items: {
     id: number;
     product_name: string;
@@ -85,6 +91,8 @@ function OrderReturnPage() {
   for (const item of order.items) {
     total = total + item.price * item.quantity;
   }
+  const shippingPrice = Number(order.shipping_price ?? 0);
+  total = total + shippingPrice;
 
   return (
     <div className="return-page">
@@ -137,7 +145,28 @@ function OrderReturnPage() {
               <span>{item.price * item.quantity} kr</span>
             </div>
           ))}
+          {order.shipping_method && (
+            <div className="return-item">
+              <span>
+                {order.shipping_method === "service_point"
+                  ? "Frakt – PostNord ombud"
+                  : "Frakt – Hemleverans"}
+              </span>
+              <span>{shippingPrice === 0 ? "Fri frakt" : shippingPrice + " kr"}</span>
+            </div>
+          )}
         </div>
+
+        {order.service_point_name && (
+          <p className="return-address">
+            Ombud: {order.service_point_name}, {order.service_point_address}
+          </p>
+        )}
+        {order.estimated_delivery && (
+          <p className="return-address">
+            Beräknad leverans: {formatDeliveryDate(order.estimated_delivery)}
+          </p>
+        )}
 
         <div className="return-total">
           <span>Total</span>

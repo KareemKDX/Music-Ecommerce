@@ -6,5 +6,11 @@ export interface Order {
   status: string;
   created_at: string;
   shipping_address: string;
+  shipping_method: "service_point" | "home" | null;
+  shipping_price: number;
+  postal_code: string | null;
+  service_point_name: string | null;
+  service_point_address: string | null;
+  estimated_delivery: string | null;
   items: OrderItem[];
 }

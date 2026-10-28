@@ -34,66 +34,190 @@
   position: absolute;
   top: 50px;
   right: 0;
-  width: 340px;
+  width: 360px;
   background-color: white;
-  border-radius: var(--radius-small);
-  padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ececec;
+  border-radius: var(--radius-medium);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.04),
+    0 16px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  color: var(--color-text-dark);
 }
 
-.cart-dropdown h2 {
-  margin: 0 0 20px;
-  font-size: 20px;
-  color: #1a202c;
+/* HEADER */
+.cart-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.empty-cart {
-  color: #6b7280;
+.cart-header h2 {
   margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
-.cart-items {
+.cart-header-count {
+  font-size: 13px;
+  color: #8a8a8f;
+}
+
+/* EMPTY / LOGGED OUT */
+.cart-empty-state {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 20px;
+  text-align: center;
+  color: #a1a1aa;
+}
+
+.cart-empty-state p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b6b72;
+}
+
+.cart-empty-state .checkout-button {
+  margin-top: 4px;
+}
+
+/* ITEMS */
+.cart-items {
+  list-style: none;
+  margin: 0;
+  padding: 0 20px;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .cart-item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #e5e7eb;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.cart-item h3 {
-  margin: 0 0 4px;
-  font-size: 16px;
-  color: #1a202c;
+.cart-item:last-child {
+  border-bottom: none;
 }
 
-.cart-item p {
-  margin: 1;
+.cart-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cart-item-info h3 {
+  margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  font-weight: 500;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cart-item-unit-price {
+  font-size: 13px;
+  color: #8a8a8f;
+}
+
+.cart-quantity {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: 6px;
+  border: 1px solid #e4e4e7;
+  border-radius: var(--radius-small);
+}
+
+.cart-quantity button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  color: #52525b;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cart-quantity button:hover {
+  background-color: #f4f4f5;
+}
+
+.cart-quantity span {
+  min-width: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.cart-item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.cart-item-total {
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .remove-cart-item {
+  display: flex;
+  padding: 4px;
+  margin: -4px -4px 0 0;
   background: transparent;
   border: none;
-  font-size: 24px;
-  color: #9ca3af;
+  border-radius: var(--radius-small);
+  color: #a1a1aa;
   cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .remove-cart-item:hover {
-  color: #ef4444;
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+/* FOOTER */
+.cart-footer {
+  padding: 16px 20px 20px;
+  border-top: 1px solid #f0f0f0;
+  background-color: #fafafa;
 }
 
 .cart-total {
-  padding: 16px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 15px;
+}
+
+.cart-total strong {
   font-size: 17px;
-  color: #1a202c;
+  font-weight: 600;
+}
+
+.cart-shipping-note {
+  margin: 4px 0 16px;
+  font-size: 12px;
+  color: #8a8a8f;
 }
 
 .checkout-button {
@@ -103,9 +227,11 @@
   border-radius: var(--radius-small);
   background-color: var(--color-primary-darkened);
   color: white;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
 .checkout-button:hover {

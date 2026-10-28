@@ -8,6 +8,12 @@ interface Order {
   status: string;
   created_at: string;
   shipping_address: string;
+  shipping_method: "service_point" | "home" | null;
+  shipping_price: number;
+  postal_code: string | null;
+  service_point_name: string | null;
+  service_point_address: string | null;
+  estimated_delivery: string | null;
   items: OrderItem[];
 }
 
@@ -33,7 +39,9 @@ orderRouter.get("/by-session", authenticateJWT, async (req, res) => {
 
     // USER CAN ONLY SEE ITS OWN ORDER BY USERID AND SESSION ID
     const [orderRows] = await pool.execute(
-      `SELECT id, payment_status, status, shipping_address, created_at
+      `SELECT id, payment_status, status, shipping_address, created_at,
+              shipping_method, shipping_price, postal_code,
+              service_point_name, service_point_address, estimated_delivery
        FROM orders
        WHERE stripe_session_id = ? AND user_id = ?`,
       [sessionId, userId],
@@ -206,6 +214,12 @@ orderRouter.get("/", authenticateJWT, async (req, res) => {
         orders.status,
         orders.created_at,
         orders.shipping_address,
+        orders.shipping_method,
+        orders.shipping_price,
+        orders.postal_code,
+        orders.service_point_name,
+        orders.service_point_address,
+        orders.estimated_delivery,
 
         order_items.id AS item_id,
         order_items.product_id,
@@ -241,6 +255,12 @@ orderRouter.get("/", authenticateJWT, async (req, res) => {
           status: row.status,
           created_at: row.created_at,
           shipping_address: row.shipping_address,
+          shipping_method: row.shipping_method,
+          shipping_price: Number(row.shipping_price),
+          postal_code: row.postal_code,
+          service_point_name: row.service_point_name,
+          service_point_address: row.service_point_address,
+          estimated_delivery: row.estimated_delivery,
           items: [],
         };
 

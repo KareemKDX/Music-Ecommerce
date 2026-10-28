@@ -14,6 +14,7 @@ import importRouter from "./routes/imports";
 import searchRouter from "./routes/search";
 import checkoutRouter from "./routes/checkout";
 import webhookRouter from "./routes/webhook";
+import shippingRouter from "./routes/shipping-routes";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/currency", currencyRouter);
 app.use("/api/import", importRouter);
 app.use("/api/search", searchRouter);
 app.use("/api/checkout", checkoutRouter);
+app.use("/api/shipping", shippingRouter);
 
 app.get("/", (req, res) => {
   res.send("Backend fungerar!");

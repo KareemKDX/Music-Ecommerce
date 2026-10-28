@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../axios/api";
 import type { Order } from "../types/Order";
+import { formatDeliveryDate } from "../utils/formatDeliveryDate";
 
 function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -68,6 +69,27 @@ function Orders() {
               </div>
               <p>Datum: {order.created_at}</p>
               <p>Shipping Adress: {order.shipping_address}</p>
+              {order.shipping_method && (
+                <p>
+                  Shipping:{" "}
+                  {order.shipping_method === "service_point"
+                    ? "PostNord service point"
+                    : "Home delivery"}{" "}
+                  - {order.shipping_price} kr
+                </p>
+              )}
+              {order.service_point_name && (
+                <p>
+                  Service point: {order.service_point_name},{" "}
+                  {order.service_point_address}
+                </p>
+              )}
+              {order.estimated_delivery && (
+                <p>
+                  Estimated delivery:{" "}
+                  {formatDeliveryDate(order.estimated_delivery)}
+                </p>
+              )}
 
               <div className="order-items-box">
                 <h4>Order Items:</h4>
