@@ -1,4 +1,4 @@
-# E-SHOP — Music Equipment Store
+# Spexah Instruments — Music Equipment Store
 
 A full-stack e-commerce web application built as a school project.
 The application allows customers to browse products, manage their shopping cart and place orders, while administrators can manage products and orders through an admin dashboard.
@@ -9,9 +9,17 @@ The application allows customers to browse products, manage their shopping cart 
 
 **Backend:** https://eshop-backend-gules.vercel.app/
 
-> The application uses Vercel for deployment and Aiven for the MySQL database.
+### Test-accounts
 
----
+Admin - Username: Admin@gmail.com Password: Admin@gmail.com
+Customer - Username: customer@gmailtest.com Password: Customer123
+
+### Env
+
+- Both /frontend and /backend have their own .env-example files. Copy them into
+  your own .env. Add all your own keys there for every corresponding task and follow the manuals provided there.
+
+> The application uses Vercel for deployment and Aiven for the MySQL database.
 
 ## Tech Stack
 
@@ -34,13 +42,19 @@ The application allows customers to browse products, manage their shopping cart 
 - mysql2
 - CORS
 
-### 3rd-party Integrations
+### Database & Deployment
 
-Postnord Shipping - Adapter and service created with help of AI.
+- MySQL hosted on Aiven
+- Vercel for frontend and backend deployment (separate projects)
+- GitHub
+
+## 3rd-party Integrations
+
+### Postnord Shipping - Adapter and service created with help of AI.
 
 Manual control and documentation read before, so that AI input & code matches PostNords own documentation and is correct by giving providing Claude all API-endpoints URL:s and Request bodies. Manually checked and verified after implementation.
 
-- PROMPT
+- PROMPT (translated from swedish to english)
 
 - **Service points:** the customer enters a postal code and sees the nearest PostNord service points, fetched via our server. The server checks that the chosen service point is among those returned for that postal code.
 - **Delivery time:** checkout shows the estimated delivery from PostNord, from the shop's postal code to the customer's (e.g. "Estimated delivery: Tuesday 27/10").
@@ -86,15 +100,15 @@ Prompt to the AI (do not code yet)
 > Use `process.env.POSTNORD_API_KEY` and `process.env.SHOP_POSTAL_CODE`. Do not open or read `.env`.
 > For each endpoint, tell me which parts of the request and response you are sure about and which you are guessing, so I can verify them against PostNord's documentation.
 
-Currency selector (Frankfurter)
+### Currency selector (Frankfurter)
 
 `currency-adapter.ts` fetches exchange rates from Frankfurter through `fetchJson` (timeout and error handling) and validates them with Zod, including positive rates. React shows prices in SEK, EUR or USD. If the rates can't be fetched, prices fall back to SEK and the customer sees a short message.
 
-Search (Algolia)
+### Search (Algolia)
 
 `search-adapter.ts` indexes products with the SKU as `objectID` and answers searches in the shop's own format. `GET /api/search` supports free text and pagination, validates parameters with Zod (invalid values give 400, with a maximum page size) and tolerates typos. The database is saved first, and Algolia is updated afterwards when products are imported, created, changed or deleted. If Algolia is down, the product is still saved and the admin is told that the search index is out of date. The admin key stays on the server.
 
-Payment
+### Payment (Stripe)
 
 `payment-adapter.ts` creates a hosted Stripe Checkout Session. React only sends the shipping address, and the server reads the cart and the prices from the database and checks the stock. The order is saved as unpaid before the customer is sent to Stripe, and its id follows the payment as `client_reference_id`. The webhook verifies Stripe's signature and marks the order as paid only once. It lowers the stock in the same database transaction, and `checkout.session.expired` cancels the order. The confirmation page only shows the order's status and never changes it.
 
@@ -102,13 +116,59 @@ Image storage (Supabase Storage)
 
 `storage-adapter.ts` uploads product images to a public Supabase bucket
 
-### Database & Deployment
+## Reflection
 
-- MySQL hosted on Aiven
-- Vercel for frontend and backend deployment
-- Git & GitHub
+### 1. Integration model and why
 
----
+Product data import: File (CSV and XML).
+The supplier publishes an export file, so we fetch it and handle encoding, decimal commas and structure ourselves.
+
+Search (Algolia):
+REST through an SDK. We push products in after saving them to the database, and each search is one request and one answer.
+
+Payment (Stripe): Redirect & webhook. The customer pays on Stripe's page, and Stripe tells our server when the payment is done, so we never depend on the customer returning.
+-Product images (Supabase):\*\* REST through an SDK, file upload. The data is a binary file, and the image is shown straight from the storage URL.
+
+Shipping (PostNord):
+REST. We ask for the nearest service points and the delivery time once the customer has entered a postal code.
+
+### 2. Why calls go through Express and not React
+
+Security Reasons
+The API keys from our integrations must stay secret, and the server validates the files before anything is saved through our backend code. Example zod and other functions. With a express backend we can safely secure keys, read & modify data the way we want it before it reaches the client (user). We only want the client to see whats necessary.
+
+Examples:
+
+Search (Algolia) - Admin key can change or delete the index, so only our express server sees it. The browser only uses our own `/api/search` url.
+-Payment (Stripe) - the secret key can create payments, the price is calculated from the database so it cannot be changed in the browser, and Stripe's webhook needs a server to call.
+Without this a user could for example change the price directly through the frontend and that data would be sent back to our database which would be a security risk.
+
+-
+
+### 3. Why integrate instead of building it ourselves
+
+Product data import: Building it ourselves would mean agreeing a data format with every supplier and keeping it in sync. We can easily fetch a huge amount of products for our page with all information needed like description, categories etc without filling it ourselves. We only create our own model that formats the supplier data into our own.
+
+Search (Algolia): It would need a lot of code which would be time consuming. While it’s not hard to create a simple search index function, Agolia handles typos, relevans, and searches very fast which is complex.
+
+Payment (Stripe): it would require card network agreements, PCI compliance, fraud checks and 3D Secure.
+
+Product images (Supabase): Images can be big in size. For us to have our own images we would need a fil
+
+Shipping (PostNord): We would need data about service points and transit times, which only the carrier has. Secondly if we would be able to get this information ourselves and wanted to code it, it would probably be very costly.
+
+### 4. What happens when the service is down
+
+Product data import: The import fails with an error to the admin and nothing in the database changes.
+Search (Algolia): Search shows a clear message. Products are still saved in the database and the admin is told that the search index is out of date.
+Payment (Stripe): Customer gets a message that the order is unpaid and it doesnt update.. .nothing is marked as paid.
+Product images (Supabase): Admin gets a message and the product keeps its old image.
+Since products have two image_url rows in database.
+Shipping (PostNord): Customer gets a clear message and the order is not created without a valid shipping choice.
+
+### 5. Risks of depending on a service
+
+Payment (Stripe): If Stripe is down, our customers will not be able to purchase any items which would be very costly, and in worst case could also ruin our reputation when stuff doesnt work. GDPR is very strict with how we are allowed to handle personal data. We would need to trust Stripe that they store our customer data safely and that it is not hosted anywhere outside of EU.
 
 ## Features
 
@@ -256,21 +316,13 @@ MYSQL_DATABASE_PASSWORD=
 JWT_SECRET=
 ```
 
-### 5. Start the backend
+### 5. Start the project from
+
+From root folder:
 
 ```bash
 npm run dev
 ```
-
-### 6. Start the frontend
-
-From the frontend directory:
-
-```bash
-npm run dev
-```
-
-The frontend and backend can then be accessed through their respective local development URLs.
 
 ---
 
