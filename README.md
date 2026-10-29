@@ -5,9 +5,9 @@ The application allows customers to browse products, manage their shopping cart 
 
 ## Live Demo
 
-**Frontend:** https://eshop-frontend-mauve.vercel.app/
+**Frontend:** https://music-ecommerce-frontend.vercel.app/
 
-**Backend:** https://eshop-backend-gules.vercel.app/
+**Backend:** https://music-ecommerce-two.vercel.app/
 
 ### Test-accounts
 
