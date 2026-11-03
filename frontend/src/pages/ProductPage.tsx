@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { isTokenValid } from "../utils/isTokenValid";
 import CartContext from "../context/CartContext";
 import Loading from "../components/Loading";
 import api from "../axios/api";
@@ -15,8 +14,6 @@ function ProductPage() {
 
   const context = useContext(CartContext);
 
-  const token = localStorage.getItem("token");
-  const isLoggedIn = isTokenValid(token);
   const [loading, setLoading] = useState(true);
 
   if (!context) {
@@ -52,12 +49,8 @@ function ProductPage() {
     return <p className="product-loading">Product not found.</p>;
   }
 
+  // No login needed, guests get their own cart
   function handleAddToCart() {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
     if (product) {
       addToCart(product);
     }
@@ -125,11 +118,7 @@ function ProductPage() {
               onClick={handleAddToCart}
               disabled={soldOut}
             >
-              {soldOut
-                ? "Out of stock"
-                : !isLoggedIn
-                  ? "Log in to purchase"
-                  : "Add to cart"}
+              {soldOut ? "Out of stock" : "Add to cart"}
             </button>
           </div>
           <ul className="product-perks">

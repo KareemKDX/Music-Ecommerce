@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import CartContext from "../context/CartContext";
 import "../css/OrderPage.css";
 
 import api from "../axios/api";
 import { formatDeliveryDate } from "../utils/formatDeliveryDate";
+import { isTokenValid } from "../utils/isTokenValid";
 
 type ShippingMethod = "service_point" | "home";
 
@@ -52,6 +54,9 @@ function OrderPage() {
   }
 
   const { cart } = context;
+
+  // Guests can use the cart, but have to log in or create an account to pay
+  const isLoggedIn = isTokenValid(localStorage.getItem("token"));
 
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -247,9 +252,7 @@ function OrderPage() {
 
               {quote && quote.shippingPrice > 0 && (
                 <div className="order-free-shipping">
-                  <p>
-                    Fri frakt vid köp över {quote.freeShippingFrom} kr
-                  </p>
+                  <p>Fri frakt vid köp över {quote.freeShippingFrom} kr</p>
                   <div className="free-shipping-bar">
                     <div
                       className="free-shipping-bar-fill"
@@ -283,121 +286,140 @@ function OrderPage() {
         <section className="shipping-section">
           <h2>Order Information</h2>
 
-          <form onSubmit={handleSubmit}>
-            <h3 className="form-step">
-              <span>1</span> Contact & address
-            </h3>
+          {!isLoggedIn ? (
+            <div className="checkout-login">
+              <p>Log in or create an account to continue to payment.</p>
+              <p className="checkout-login-note">
+                Your cart is saved and will be moved to your account.
+              </p>
+              <NavLink className="pay-button" to="/login?redirect=/order">
+                Log in
+              </NavLink>
+              <NavLink
+                className="checkout-register-button"
+                to="/register?redirect=/order"
+              >
+                Create account
+              </NavLink>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <h3 className="form-step">
+                <span>1</span> Contact & address
+              </h3>
 
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-              required
-            />
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                required
+              />
 
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-mail"
-              required
-            />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-mail"
+                required
+              />
 
-            <input
-              value={shippingAddress}
-              onChange={(e) => setShippingAddress(e.target.value)}
-              placeholder="Delivery address"
-              required
-            />
+              <input
+                value={shippingAddress}
+                onChange={(e) => setShippingAddress(e.target.value)}
+                placeholder="Delivery address"
+                required
+              />
 
-            <input
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="Postal number (5 digits)"
-              inputMode="numeric"
-              maxLength={6}
-              required
-            />
+              <input
+                value={postalCode}
+                onChange={(e) => setPostalCode(e.target.value)}
+                placeholder="Postal number (5 digits)"
+                inputMode="numeric"
+                maxLength={6}
+                required
+              />
 
-            <h3 className="form-step">
-              <span>2</span> Delivery
-            </h3>
+              <h3 className="form-step">
+                <span>2</span> Delivery
+              </h3>
 
-            <fieldset className="shipping-methods">
-              <legend className="visually-hidden">Delivery options</legend>
-              <label>
-                <input
-                  type="radio"
-                  name="shippingMethod"
-                  checked={shippingMethod === "service_point"}
-                  onChange={() => setShippingMethod("service_point")}
-                />
-                <span className="shipping-method-icon">📦</span>
-                PostNord ombud
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="shippingMethod"
-                  checked={shippingMethod === "home"}
-                  onChange={() => setShippingMethod("home")}
-                />
-                <span className="shipping-method-icon">🏠</span>
-                Home delivery
-              </label>
-            </fieldset>
-
-            {shippingMethod === "service_point" && servicePoints.length > 0 && (
-              <fieldset className="service-points">
-                <legend>Välj ombud</legend>
-                {servicePoints.map((sp) => (
-                  <label key={sp.id}>
-                    <input
-                      type="radio"
-                      name="servicePoint"
-                      checked={selectedPointId === sp.id}
-                      onChange={() => setServicePointId(sp.id)}
-                    />
-                    <span>
-                      <strong>{sp.name}</strong>
-                      <br />
-                      {sp.address}
-                    </span>
-                  </label>
-                ))}
+              <fieldset className="shipping-methods">
+                <legend className="visually-hidden">Delivery options</legend>
+                <label>
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    checked={shippingMethod === "service_point"}
+                    onChange={() => setShippingMethod("service_point")}
+                  />
+                  <span className="shipping-method-icon">📦</span>
+                  PostNord ombud
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="shippingMethod"
+                    checked={shippingMethod === "home"}
+                    onChange={() => setShippingMethod("home")}
+                  />
+                  <span className="shipping-method-icon">🏠</span>
+                  Home delivery
+                </label>
               </fieldset>
-            )}
 
-            {shippingMethod === "service_point" && searchingPoints && (
-              <p className="order-searching">Searching delivery...</p>
-            )}
+              {shippingMethod === "service_point" &&
+                servicePoints.length > 0 && (
+                  <fieldset className="service-points">
+                    <legend>Välj ombud</legend>
+                    {servicePoints.map((sp) => (
+                      <label key={sp.id}>
+                        <input
+                          type="radio"
+                          name="servicePoint"
+                          checked={selectedPointId === sp.id}
+                          onChange={() => setServicePointId(sp.id)}
+                        />
+                        <span>
+                          <strong>{sp.name}</strong>
+                          <br />
+                          {sp.address}
+                        </span>
+                      </label>
+                    ))}
+                  </fieldset>
+                )}
 
-            {shippingMethod === "service_point" &&
-              validPostalCode &&
-              !searchingPoints &&
-              !shippingError &&
-              servicePoints.length === 0 && (
-                <p className="error-text">
-                  No delivery options found for this address.
-                </p>
+              {shippingMethod === "service_point" && searchingPoints && (
+                <p className="order-searching">Searching delivery...</p>
               )}
 
-            {shippingError && <p className="error-text">{shippingError}</p>}
-            {checkoutError && <p className="error-text">{checkoutError}</p>}
+              {shippingMethod === "service_point" &&
+                validPostalCode &&
+                !searchingPoints &&
+                !shippingError &&
+                servicePoints.length === 0 && (
+                  <p className="error-text">
+                    No delivery options found for this address.
+                  </p>
+                )}
 
-            <button
-              type="submit"
-              className="pay-button"
-              disabled={paying || cart.length === 0 || quote === null}
-            >
-              {paying
-                ? "Redirecting to payment..."
-                : quote
-                  ? `Pay ${quote.total} kr`
-                  : "Pay with card"}
-            </button>
-          </form>
+              {shippingError && <p className="error-text">{shippingError}</p>}
+              {checkoutError && <p className="error-text">{checkoutError}</p>}
+
+              <button
+                type="submit"
+                className="pay-button"
+                disabled={paying || cart.length === 0 || quote === null}
+              >
+                {paying
+                  ? "Redirecting to payment..."
+                  : quote
+                    ? `Pay ${quote.total} kr`
+                    : "Pay with card"}
+              </button>
+            </form>
+          )}
         </section>
       </div>
     </div>

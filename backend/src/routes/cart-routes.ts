@@ -1,28 +1,39 @@
 import { Router } from "express";
 import { pool } from "../mysql-database";
-import { authenticateJWT } from "../authentication/authenticateJWT";
+import { optionalJWT } from "../authentication/optionalJWT";
+import { findCartId, getOrCreateCart } from "../services/cart-service";
 
 const cartRouter = Router();
 
-// FETCH CART BY USER_ID
-cartRouter.get("/", authenticateJWT, async (req, res) => {
+// Works for both logged in users and guests.
+// Logged in -> cart is found with the JWT. Guest -> cart is found with the X-Cart-Token header.
+
+// FETCH CART
+cartRouter.get("/", optionalJWT, async (req, res) => {
   try {
-    const userId = req.user!.userId;
+    const cartId = await findCartId(
+      req.user?.userId,
+      req.header("X-Cart-Token"),
+    );
+
+    // No cart yet = empty cart
+    if (!cartId) {
+      return res.json([]);
+    }
 
     const [rows] = await pool.execute(
       `
-      SELECT 
+      SELECT
         cart_items.id,
         cart_items.product_id,
         cart_items.quantity,
         products.name,
         products.price
-      FROM carts
-      JOIN cart_items ON carts.id = cart_items.cart_id
+      FROM cart_items
       JOIN products ON cart_items.product_id = products.id
-      WHERE carts.user_id = ?
+      WHERE cart_items.cart_id = ?
       `,
-      [userId],
+      [cartId],
     );
 
     res.json(rows);
@@ -30,97 +41,63 @@ cartRouter.get("/", authenticateJWT, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Kunde inte hämta varukorgen",
+      message: "Could not fetch the cart",
     });
   }
 });
 
 // ADD PRODUCT
-
-cartRouter.post("/", authenticateJWT, async (req, res) => {
+cartRouter.post("/", optionalJWT, async (req, res) => {
   try {
-    const userId = req.user!.userId;
     const { productId } = req.body;
 
-    // CHECK USER CART
-    const [carts] = await pool.execute(
-      "SELECT id FROM carts WHERE user_id = ?",
-      [userId],
+    const cart = await getOrCreateCart(
+      req.user?.userId,
+      req.header("X-Cart-Token"),
     );
 
-    const cartRows = carts as { id: number }[];
-
-    if (cartRows.length === 0) {
-      return res.status(404).json({
-        message: "Ingen varukorg hittades",
-      });
-    }
-
-    const cartId = cartRows[0].id;
-
-    // CHECK IF PRODUCT ALREADY EXISTS IN CART
-    const [items] = await pool.execute(
-      `SELECT id, quantity
-       FROM cart_items
-       WHERE cart_id = ? AND product_id = ?`,
-      [cartId, productId],
+    // IF PRODUCT IS ALREADY IN CART -> INCREASE, IF NOT -> ADD NEW
+    await pool.execute(
+      `INSERT INTO cart_items (cart_id, product_id, quantity)
+       VALUES (?, ?, 1)
+       ON DUPLICATE KEY UPDATE quantity = quantity + 1`,
+      [cart.cartId, productId],
     );
 
-    const itemRows = items as {
-      id: number;
-      quantity: number;
-    }[];
-
-    if (itemRows.length > 0) {
-      // IF YES -> INCREASE
-      await pool.execute(
-        `UPDATE cart_items
-         SET quantity = quantity + 1
-         WHERE id = ?`,
-        [itemRows[0].id],
-      );
-    } else {
-      // IF NO -> ADD NEW
-      await pool.execute(
-        `INSERT INTO cart_items (cart_id, product_id, quantity)
-         VALUES (?, ?, ?)`,
-        [cartId, productId, 1],
-      );
-    }
+    // So old guest carts can be cleaned up
+    await pool.execute("UPDATE carts SET updated_at = NOW() WHERE id = ?", [
+      cart.cartId,
+    ]);
 
     res.status(201).json({
-      message: "Produkten lades till i varukorgen",
+      message: "Product added to cart",
+      // Only set when a new guest cart was made, the frontend saves it
+      cartToken: cart.guestToken,
     });
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
-      message: "Kunde inte lägga till produkten i varukorgen",
+      message: "Could not add the product to the cart",
     });
   }
 });
 
 //DELETE PRODUCT BY ID
-
-cartRouter.delete("/:productId", authenticateJWT, async (req, res) => {
+cartRouter.delete("/:productId", optionalJWT, async (req, res) => {
   try {
-    const userId = req.user!.userId;
     const productId = Number(req.params.productId);
 
-    const [carts] = await pool.execute(
-      "SELECT id FROM carts WHERE user_id = ?",
-      [userId],
+    const cartId = await findCartId(
+      req.user?.userId,
+      req.header("X-Cart-Token"),
     );
 
-    const cartRows = carts as { id: number }[];
-
-    if (cartRows.length === 0) {
+    if (!cartId) {
       return res.status(404).json({
-        message: "Ingen varukorg hittades",
+        message: "No cart found",
       });
     }
-
-    const cartId = cartRows[0].id;
 
     await pool.execute(
       `DELETE FROM cart_items
@@ -128,13 +105,13 @@ cartRouter.delete("/:productId", authenticateJWT, async (req, res) => {
       [cartId, productId],
     );
     res.json({
-      message: "Produkten togs bort från varukorgen",
+      message: "Product removed from cart",
     });
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
-      message: "Kunde inte ta bort produkten från varukorgen",
+      message: "Could not remove the product from the cart",
     });
   }
 });

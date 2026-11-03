@@ -1,12 +1,20 @@
 import { useState } from "react";
 import api from "../axios/api";
 import "../css/AdminLogin.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 
 function CustomerLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // ?redirect=/order -> go back to checkout after login. Only links inside our own site
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
+  const redirect =
+    redirectParam?.startsWith("/") && !redirectParam.startsWith("//")
+      ? redirectParam
+      : "/";
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -20,8 +28,10 @@ function CustomerLogin() {
 
       const data = await response.data;
       localStorage.setItem("token", data.token);
+      // The guest cart now belongs to the user, so the guest token is not needed
+      localStorage.removeItem("cartToken");
       console.log("Logged in:", data);
-      window.location.href = "/";
+      window.location.href = redirect;
     } catch (error) {
       console.error(error);
       setError("Error loggin in to server. ");
@@ -67,7 +77,10 @@ function CustomerLogin() {
                   Login
                 </button>
               </form>
-              <NavLink className="create-account-btn" to="/register">
+              <NavLink
+                className="create-account-btn"
+                to={"/register?redirect=" + redirect}
+              >
                 Create new account
               </NavLink>
               <NavLink className="admin-login-btn" to="/admin/login">

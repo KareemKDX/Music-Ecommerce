@@ -11,6 +11,13 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  // GUEST CART - lets the server find the cart when no one is logged in
+  const cartToken = localStorage.getItem("cartToken");
+
+  if (cartToken) {
+    config.headers["X-Cart-Token"] = cartToken;
+  }
+
   return config;
 });
 

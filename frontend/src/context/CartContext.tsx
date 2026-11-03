@@ -23,7 +23,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         const data = response.data;
 
-        console.log("Cart hämtas från CartContext", data);
+        console.log("Cart fetched in CartContext", data);
 
         setCart(data);
       } catch (error) {
@@ -36,9 +36,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   async function addToCart(product: Product) {
     try {
-      await api.post("/cart", {
+      const response = await api.post("/cart", {
         productId: product.id,
       });
+
+      // SERVER MADE A NEW GUEST CART -> SAVE THE TOKEN SO WE FIND IT AGAIN
+      if (response.data.cartToken) {
+        localStorage.setItem("cartToken", response.data.cartToken);
+      }
 
       const cartResponse = await api.get("/cart");
 

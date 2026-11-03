@@ -10,6 +10,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { authenticateJWT } from "../authentication/authenticateJWT";
 import { Customer } from "../types/Customer";
+import { mergeGuestCart } from "../services/cart-service";
 
 const customerRouter = Router();
 
@@ -90,6 +91,9 @@ customerRouter.post("/register", async (req, res) => {
       is_admin: 0,
     };
 
+    // GIVE THE NEW ACCOUNT THE CART THE CUSTOMER USED AS A GUEST
+    await mergeGuestCart(customer.id, req.header("X-Cart-Token"));
+
     res.status(201).json({
       message: "Konto skapat",
       user: customer,
@@ -154,6 +158,10 @@ customerRouter.post("/login", async (req, res) => {
       is_admin: customer.is_admin,
     };
     console.log(user);
+
+    // MOVE THE GUEST CART (IF ANY) TO THE USER
+    await mergeGuestCart(customer.id, req.header("X-Cart-Token"));
+
     res.json({ message: "Inloggning lyckades", user, token: signToken(user) });
   } catch (error) {
     console.error(error);

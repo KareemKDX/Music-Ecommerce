@@ -2,9 +2,17 @@ import { useState } from "react";
 import { isAxiosError } from "axios";
 import api from "../axios/api";
 import "../css/AdminLogin.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 
 function CustomerRegister() {
+  // ?redirect=/order -> go back to checkout after register. Only links inside our own site
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
+  const redirect =
+    redirectParam?.startsWith("/") && !redirectParam.startsWith("//")
+      ? redirectParam
+      : "/";
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +40,9 @@ function CustomerRegister() {
       });
 
       localStorage.setItem("token", response.data.token);
-      window.location.href = "/";
+      // The guest cart now belongs to the new account, so the guest token is not needed
+      localStorage.removeItem("cartToken");
+      window.location.href = redirect;
     } catch (error) {
       console.error(error);
       const message = isAxiosError(error)
@@ -113,7 +123,10 @@ function CustomerRegister() {
                   {submitting ? "Creating account..." : "Create account"}
                 </button>
               </form>
-              <NavLink className="admin-login-btn" to="/login">
+              <NavLink
+                className="admin-login-btn"
+                to={"/login?redirect=" + redirect}
+              >
                 Already have an account? Press here to login.
               </NavLink>
 

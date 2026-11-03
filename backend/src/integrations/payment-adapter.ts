@@ -45,7 +45,7 @@ if (!SECRET_KEY) {
 // Worst case: 3 attempts × 10 s ≈ 30 s. Then it throws, and the route answers 502 with a clear message.
 const stripe = new Stripe(SECRET_KEY, { timeout: 10_000 });
 
-/* --- 1. HOSTED: the customer pays on Stripe's page --- */
+// HOSTED: the customer pays on Stripe's page
 export async function createHostedCheckout(
   orderId: string,
   items: CheckoutItem[],

@@ -2,13 +2,10 @@ import { useContext } from "react";
 import type { Product } from "../types/Product";
 import CartContext from "../context/CartContext";
 import CurrencyContext from "../context/CurrencyContext";
-import { isTokenValid } from "../utils/isTokenValid";
 import { useNavigate } from "react-router-dom";
 
 function ProductCard({ product }: { product: Product }) {
   const context = useContext(CartContext);
-  const token = localStorage.getItem("token");
-  const isLoggedIn = isTokenValid(token);
   const navigate = useNavigate();
 
   const currencyContext = useContext(CurrencyContext);
@@ -23,12 +20,8 @@ function ProductCard({ product }: { product: Product }) {
     throw new Error("Hittar ej context i productcard.tsx");
   }
 
+  // No login needed, guests get their own cart
   function handleAddToCart() {
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
     addToCart(product);
   }
 
@@ -68,7 +61,7 @@ function ProductCard({ product }: { product: Product }) {
 
       <div className="product-actions">
         <button className="primary-button" onClick={handleAddToCart}>
-          {!isLoggedIn ? "Log in to purchase" : "Add to cart"}
+          Add to cart
         </button>
         <button
           className="secondary-button"

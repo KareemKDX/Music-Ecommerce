@@ -15,6 +15,7 @@ import searchRouter from "./routes/search";
 import checkoutRouter from "./routes/checkout";
 import webhookRouter from "./routes/webhook";
 import shippingRouter from "./routes/shipping-routes";
+import { deleteOldGuestCarts } from "./services/cart-service";
 
 const app = express();
 
@@ -42,6 +43,10 @@ app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   console.error(`${req.method} ${req.originalUrl} failed: ${message}`);
   res.status(500).json({ error: "Something went wrong on the server" });
 });
+
+// CLEAN UP OLD GUEST CARTS WHEN THE SERVER STARTS AND THEN ONCE A DAY
+deleteOldGuestCarts();
+setInterval(deleteOldGuestCarts, 24 * 60 * 60 * 1000);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
