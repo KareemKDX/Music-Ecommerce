@@ -34,7 +34,7 @@ function CustomerLogin() {
         <div className="login-card">
           <div className="login-box-left">
             <div className="login-header">
-              <h1>Customer Login</h1>
+              <h1>Login</h1>
               <p>Sign in to continue</p>
             </div>
           </div>
@@ -42,7 +42,7 @@ function CustomerLogin() {
             <div className="input-group">
               <form onSubmit={handleLogin}>
                 <div className="input-field-login">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">E-mail</label>
                   <input
                     id="email"
                     type="email"
@@ -53,7 +53,7 @@ function CustomerLogin() {
                 </div>
 
                 <div className="input-field-login">
-                  <label htmlFor="password">Lösenord</label>
+                  <label htmlFor="password">Password</label>
                   <input
                     id="password"
                     type="password"
@@ -67,6 +67,9 @@ function CustomerLogin() {
                   Login
                 </button>
               </form>
+              <NavLink className="create-account-btn" to="/register">
+                Create new account
+              </NavLink>
               <NavLink className="admin-login-btn" to="/admin/login">
                 Admin account? Press here to login.
               </NavLink>

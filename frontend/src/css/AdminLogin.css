@@ -1,14 +1,14 @@
 .login-page {
   height: 100vh;
-  display: flex;
-  justify-content: center;
+
   background-color: var(--color-text-dark);
 }
 
 .login-container {
   display: flex;
   flex-direction: row;
-  margin-top: 200px;
+  justify-content: center;
+
   padding: 30px;
 }
 
@@ -17,12 +17,22 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  max-height: 300px;
-
+  margin-top: 100px;
+  margin-bottom: 100px;
   border-radius: var(--radius-small);
   flex-wrap: wrap;
+  min-height: 350px;
+  gap: 15px;
 }
 
+.login-card input {
+  padding: 13px 16px;
+  background-color: var(--color-text);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.25s ease;
+}
 .login-box-left {
   display: flex;
   align-items: center;
@@ -33,11 +43,11 @@
   flex: 1;
   min-width: 200px;
   border-bottom-left-radius: 10%;
-  border: 1px solid #d19c1d;
+  border: 2px solid #d19c1d;
 }
 .login-box-right {
   display: flex;
-  border: 1px solid #d19c1d;
+  border: 2px solid #d19c1d;
   background-color: #d19c1d;
   height: 100%;
   align-items: center;
@@ -87,6 +97,28 @@
   flex-direction: column;
 }
 
+.create-account-btn {
+  display: block;
+  margin-top: 8px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid var(--color-text-dark);
+  border-radius: var(--radius-small);
+  color: var(--color-text-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.25s ease;
+  margin-top: 25px;
+}
+.create-account-btn:hover {
+  background-color: var(--color-text-dark);
+  color: var(--color-text-gold);
+}
+
+.register-card {
+  max-height: none;
+}
+
 .admin-login-btn {
   color: black;
   font-size: 13px;
@@ -101,7 +133,12 @@
     border-radius: 0%;
   }
   .login-box-left {
-    height: 100px;
+    border-radius: var(--radius-small);
+    max-height: 50px;
+    border: 5px black;
+  }
+  .login-box-right {
+    border-radius: var(--radius-small);
   }
 
   .login-container {

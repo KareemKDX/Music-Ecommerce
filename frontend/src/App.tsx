@@ -5,6 +5,7 @@ import OrderPage from "./pages/OrderPage";
 import AboutPage from "./pages/AboutPage";
 import AccountPage from "./pages/AccountPage";
 import CustomerLogin from "./pages/CustomerLogin";
+import CustomerRegister from "./pages/CustomerRegister";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPage from "./pages/AdminPage";
 import EditProductPage from "./pages/EditProductPage";
@@ -35,6 +36,7 @@ function App() {
               <Route path="/account" element={<AccountPage />} />
               <Route path="/order" element={<OrderPage />} />
               <Route path="/login" element={<CustomerLogin />} />
+              <Route path="/register" element={<CustomerRegister />} />
               <Route path="/return" element={<ReturnPage />} />
               //ADMIN, ROUTE TO ADMIN/LOGIN IF UNAUTHORIZED WITH PROTECTED ROUTE
               <Route path="/admin/login" element={<AdminLogin />} />

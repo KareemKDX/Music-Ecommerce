@@ -11,14 +11,15 @@ const productRouter = Router();
 productRouter.get("/", async (req, res) => {
   try {
     const [rows] = await pool.execute("SELECT * FROM products");
-    console.log("Hämtade produkter:", rows);
+
     const products = rows as Product[];
+    console.log("Fetched products:", products.length);
     res.json(products);
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
-      message: "Kunde inte hämta produkter",
+      message: "Error fetching products.",
     });
   }
 });
