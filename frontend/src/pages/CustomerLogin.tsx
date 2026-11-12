@@ -2,14 +2,29 @@ import { useState } from "react";
 import api from "../axios/api";
 import "../css/AdminLogin.css";
 import { NavLink, useSearchParams } from "react-router-dom";
+import GoogleLoginButton from "../components/GoogleLoginButton";
+
+// ?error=… FROM THE BACKEND WHEN GOOGLE LOGIN FAILS (backend/src/routes/auth.ts)
+const googleErrors: Record<string, string> = {
+  cancelled: "Google login was cancelled.",
+  "not-verified": "Your Google email is not verified.",
+  admin: "Admin accounts can't log in with Google. Use the admin login.",
+  "email-exists":
+    "An account with this email already exists. Log in with your email and password.",
+  google: "Could not log in with Google. Please try again.",
+};
 
 function CustomerLogin() {
+  const [searchParams] = useSearchParams();
+  const errorParam = searchParams.get("error");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    errorParam ? (googleErrors[errorParam] ?? googleErrors.google) : "",
+  );
 
   // ?redirect=/order -> go back to checkout after login. Only links inside our own site
-  const [searchParams] = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirect =
     redirectParam?.startsWith("/") && !redirectParam.startsWith("//")
@@ -26,15 +41,14 @@ function CustomerLogin() {
         password,
       });
 
-      const data = await response.data;
-      localStorage.setItem("token", data.token);
+      // The server put the JWT in an httpOnly cookie – React never sees the token
+      console.log("Logged in:", response.data.user);
       // The guest cart now belongs to the user, so the guest token is not needed
       localStorage.removeItem("cartToken");
-      console.log("Logged in:", data);
       window.location.href = redirect;
     } catch (error) {
       console.error(error);
-      setError("Error loggin in to server. ");
+      setError("Incorrect email & password. Try again. ");
     }
   }
 
@@ -72,11 +86,12 @@ function CustomerLogin() {
                     required
                   />
                 </div>
-
+                {error && <p className="error-text">{error}</p>}
                 <button className="login-btn " type="submit">
                   Login
                 </button>
               </form>
+              <GoogleLoginButton redirect={redirect} />
               <NavLink
                 className="create-account-btn"
                 to={"/register?redirect=" + redirect}
@@ -87,8 +102,6 @@ function CustomerLogin() {
                 Admin account? Press here to login.
               </NavLink>
             </div>
-
-            {error && <p>{error}</p>}
           </div>
         </div>
       </div>

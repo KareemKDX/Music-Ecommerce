@@ -145,3 +145,41 @@
     margin-top: 50px;
   }
 }
+
+/* GOOGLE LOGIN */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  color: var(--color-text-dark);
+  font-size: 0.9rem;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--color-text-dark);
+}
+
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: var(--radius-small);
+  background-color: white;
+  color: #1f1f1f;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+.google-login-btn:hover {
+  background-color: #f1f1f1;
+}
+.google-login-icon {
+  font-weight: 700;
+  color: #4285f4;
+}

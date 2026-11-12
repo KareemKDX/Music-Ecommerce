@@ -17,9 +17,8 @@ function AdminLogin() {
         password,
       });
 
-      const data = await response.data;
-      localStorage.setItem("token", data.token);
-      console.log("Logged in:", data);
+      // The server put the JWT in an httpOnly cookie – React never sees the token
+      console.log("Logged in:", response.data.admin);
       window.location.href = "/admin";
     } catch (error) {
       console.error(error);
@@ -61,14 +60,12 @@ function AdminLogin() {
                     required
                   />
                 </div>
-
+                {error && <p>{error}</p>}
                 <button className="login-btn " type="submit">
                   Login
                 </button>
               </form>
             </div>
-
-            {error && <p>{error}</p>}
           </div>
         </div>
       </div>

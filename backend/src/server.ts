@@ -9,6 +9,9 @@ import orderRouter from "./routes/order-routes";
 import customerRouter from "./routes/customer-routes";
 import adminRouter from "./routes/admin-routes";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth-routes";
+import googleAuthRouter from "./routes/google-auth-routes";
 import currencyRouter from "./routes/currency-routes";
 import importRouter from "./routes/imports";
 import searchRouter from "./routes/search";
@@ -21,12 +24,17 @@ const app = express();
 
 app.use("/api/stripe/webhook", webhookRouter);
 app.use(express.json());
-app.use(cors());
+// Shop and API are on different domains: allow the shop, and let the browser send the login cookie
+const clientUrl = (process.env.CLIENT_URL ?? "").replace(/\/$/, "");
+app.use(cors({ origin: clientUrl, credentials: true }));
+app.use(cookieParser()); // reads the httpOnly login cookie (req.cookies.token)
 
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/customer", customerRouter);
+app.use("/api/auth/google", googleAuthRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/currency", currencyRouter);
 app.use("/api/import", importRouter);

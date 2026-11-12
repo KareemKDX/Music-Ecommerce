@@ -5,12 +5,12 @@ import {
   type Response,
 } from "express";
 import { pool } from "../mysql-database";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { authenticateJWT } from "../authentication/authenticateJWT";
 import { Customer } from "../types/Customer";
 import { mergeGuestCart } from "../services/cart-service";
+import { clearAuthCookie, setAuthCookie } from "../lib/auth-cookie";
 
 const customerRouter = Router();
 
@@ -44,18 +44,6 @@ const UpdateRequest = z
   .refine((body) => Object.values(body).some((v) => v !== undefined), {
     message: "Nothing to update",
   });
-
-function signToken(customer: Customer) {
-  return jwt.sign(
-    {
-      userId: customer.id,
-      email: customer.email,
-      role: customer.is_admin === 1 ? "admin" : "customer",
-    },
-    process.env.JWT_SECRET!,
-    { expiresIn: "2h" },
-  );
-}
 
 function isDuplicateEntry(error: unknown) {
   return (error as { code?: string })?.code === "ER_DUP_ENTRY";
@@ -94,10 +82,11 @@ customerRouter.post("/register", async (req, res) => {
     // GIVE THE NEW ACCOUNT THE CART THE CUSTOMER USED AS A GUEST
     await mergeGuestCart(customer.id, req.header("X-Cart-Token"));
 
+    // LOG IN DIRECTLY: the JWT goes in the httpOnly cookie
+    setAuthCookie(res, customer);
     res.status(201).json({
       message: "Konto skapat",
       user: customer,
-      token: signToken(customer),
     });
   } catch (error) {
     if (isDuplicateEntry(error)) {
@@ -128,7 +117,6 @@ customerRouter.post("/login", async (req, res) => {
       is_admin: number;
     }[];
     const customer = customers[0];
-    console.log("CUSTOMER:", customer);
 
     if (!customer?.password || typeof password !== "string") {
       return res.status(401).json({ message: "Fel email eller lösenord" });
@@ -162,7 +150,9 @@ customerRouter.post("/login", async (req, res) => {
     // MOVE THE GUEST CART (IF ANY) TO THE USER
     await mergeGuestCart(customer.id, req.header("X-Cart-Token"));
 
-    res.json({ message: "Inloggning lyckades", user, token: signToken(user) });
+    // The JWT goes in the httpOnly cookie, not in the answer
+    setAuthCookie(res, user);
+    res.json({ message: "Inloggning lyckades", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Kunde inte logga in" });
@@ -238,11 +228,11 @@ customerRouter.put(
       );
       const customer = (rows as Customer[])[0];
 
-      // Email lives in the token, so hand out a fresh one
+      // Email lives in the token, so hand out a fresh cookie
+      setAuthCookie(res, customer);
       res.json({
         message: "Konto uppdaterat",
         user: customer,
-        token: signToken(customer),
       });
     } catch (error) {
       if (isDuplicateEntry(error)) {
@@ -282,7 +272,7 @@ customerRouter.delete(
         ]);
         const [result] = await connection.execute(
           `UPDATE users
-         SET username = 'Deleted user', email = ?, password = NULL
+         SET username = 'Deleted user', email = ?, password = NULL, google_id = NULL
          WHERE id = ? AND is_admin = false`,
           [`deleted-${userId}@deleted.invalid`, userId],
         );
@@ -302,6 +292,8 @@ customerRouter.delete(
       }
 
       await connection.commit();
+      // The account is gone, so log out too
+      clearAuthCookie(res);
       res.json({ message: "Konto raderat" });
     } catch (error) {
       await connection.rollback();

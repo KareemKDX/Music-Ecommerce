@@ -4,24 +4,27 @@ import CartContext from "../context/CartContext";
 import Cart from "./Cart";
 import { NavLink } from "react-router-dom";
 import CurrencySelector from "./CurrencySelector";
-import { isTokenValid } from "../utils/isTokenValid";
-import { getTokenRole } from "../utils/getTokenRole";
-import { accountLogout } from "../utils/adminLogout";
+import AuthContext from "../context/AuthContext";
 import { ShoppingCart } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const [cartOpen, setCartOpen] = useState(false);
-  const token = localStorage.getItem("token");
-  const isLoggedIn = isTokenValid(token);
-  const role = getTokenRole(token);
 
   const context = useContext(CartContext);
+  const auth = useContext(AuthContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   if (!context) {
     throw new Error("Navbar måste användas inuti CartProvider");
   }
+  if (!auth) {
+    throw new Error("Navbar måste användas inuti AuthProvider");
+  }
+
+  // WHO IS LOGGED IN – comes from the server (AuthContext), not from a token in React
+  const isLoggedIn = auth.user !== null;
+  const role = auth.user?.role;
 
   const { cart } = context;
 
@@ -59,12 +62,12 @@ const Navbar: React.FC = () => {
             )}
 
             {isLoggedIn && (
-              <button className="btn-logout" onClick={accountLogout}>
+              <button className="btn-logout" onClick={auth.logout}>
                 Logout
               </button>
             )}
 
-            {!isLoggedIn && (
+            {!isLoggedIn && !auth.loading && (
               <NavLink className="login-btn-nav" to="/login">
                 Login
               </NavLink>

@@ -3,12 +3,13 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+// Reads the JWT from the httpOnly cookie "token" (set in lib/auth-cookie.ts)
 export function authenticateJWT(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const token = req.header("Authorization");
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({
@@ -16,7 +17,7 @@ export function authenticateJWT(
     });
   }
 
-  jwt.verify(token.split(" ")[1], process.env.JWT_SECRET!, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET!, (err: unknown, user: unknown) => {
     if (err) {
       return res.status(403).json({
         error: "Forbidden",

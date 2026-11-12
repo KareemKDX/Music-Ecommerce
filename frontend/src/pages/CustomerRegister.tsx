@@ -3,6 +3,7 @@ import { isAxiosError } from "axios";
 import api from "../axios/api";
 import "../css/AdminLogin.css";
 import { NavLink, useSearchParams } from "react-router-dom";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 function CustomerRegister() {
   // ?redirect=/order -> go back to checkout after register. Only links inside our own site
@@ -33,13 +34,13 @@ function CustomerRegister() {
 
     //POST NEW CUSTOMER, LOG IN DIRECTLY WITH RETURNED TOKEN
     try {
-      const response = await api.post("/customer/register", {
+      // The server puts the JWT in an httpOnly cookie – React never sees the token
+      await api.post("/customer/register", {
         username,
         email,
         password,
       });
 
-      localStorage.setItem("token", response.data.token);
       // The guest cart now belongs to the new account, so the guest token is not needed
       localStorage.removeItem("cartToken");
       window.location.href = redirect;
@@ -123,6 +124,7 @@ function CustomerRegister() {
                   {submitting ? "Creating account..." : "Create account"}
                 </button>
               </form>
+              <GoogleLoginButton redirect={redirect} />
               <NavLink
                 className="admin-login-btn"
                 to={"/login?redirect=" + redirect}

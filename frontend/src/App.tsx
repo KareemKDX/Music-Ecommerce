@@ -15,15 +15,18 @@ import AdminOrderPage from "./pages/AdminOrderPage";
 import HomePage from "./pages/HomePage";
 import ProductPage from "./pages/ProductPage";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./css/globals.css";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { CurrencyProvider } from "./context/CurrencyContext";
 import ReturnPage from "./pages/OrderReturnPage";
+import GoogleCallback from "./pages/GoogleCallback";
 
 function App() {
   return (
     <BrowserRouter>
+      <AuthProvider>
       <CurrencyProvider>
         <CartProvider>
           <Navbar />
@@ -37,6 +40,7 @@ function App() {
               <Route path="/order" element={<OrderPage />} />
               <Route path="/login" element={<CustomerLogin />} />
               <Route path="/register" element={<CustomerRegister />} />
+              <Route path="/auth/google" element={<GoogleCallback />} />
               <Route path="/return" element={<ReturnPage />} />
               //ADMIN, ROUTE TO ADMIN/LOGIN IF UNAUTHORIZED WITH PROTECTED ROUTE
               <Route path="/admin/login" element={<AdminLogin />} />
@@ -93,6 +97,7 @@ function App() {
           <Footer />
         </CartProvider>
       </CurrencyProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

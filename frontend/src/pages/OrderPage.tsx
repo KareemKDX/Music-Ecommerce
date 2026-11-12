@@ -5,7 +5,7 @@ import "../css/OrderPage.css";
 
 import api from "../axios/api";
 import { formatDeliveryDate } from "../utils/formatDeliveryDate";
-import { isTokenValid } from "../utils/isTokenValid";
+import AuthContext from "../context/AuthContext";
 
 type ShippingMethod = "service_point" | "home";
 
@@ -26,6 +26,7 @@ type ShippingQuote = {
 
 function OrderPage() {
   const context = useContext(CartContext);
+  const auth = useContext(AuthContext);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
@@ -56,7 +57,7 @@ function OrderPage() {
   const { cart } = context;
 
   // Guests can use the cart, but have to log in or create an account to pay
-  const isLoggedIn = isTokenValid(localStorage.getItem("token"));
+  const isLoggedIn = auth?.user != null;
 
   const cartTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,

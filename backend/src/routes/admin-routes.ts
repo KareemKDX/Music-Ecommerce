@@ -5,7 +5,6 @@ import {
   type Response,
 } from "express";
 import { pool } from "../mysql-database";
-import jwt from "jsonwebtoken";
 import { indexProducts } from "../integrations/search-adapter";
 import { Product } from "../types/Product";
 import {
@@ -14,6 +13,7 @@ import {
 } from "../integrations/storage-adapter";
 import multer from "multer";
 import { authenticateJWT } from "../authentication/authenticateJWT";
+import { setAuthCookie } from "../lib/auth-cookie";
 
 const adminRouter = Router();
 
@@ -44,22 +44,12 @@ adminRouter.post("/login", async (req, res) => {
 
     const admin = admins[0];
 
-    const token = jwt.sign(
-      {
-        userId: admin.id,
-        email: admin.email,
-        role: "admin",
-      },
-      process.env.JWT_SECRET!,
-      {
-        expiresIn: "2h",
-      },
-    );
+    // Same httpOnly login cookie as customers, with role "admin"
+    setAuthCookie(res, { id: admin.id, email: admin.email, is_admin: 1 });
 
     res.json({
       message: "Inloggning lyckades",
       admin: admins[0],
-      token,
     });
   } catch (error) {
     console.error(error);

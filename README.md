@@ -226,19 +226,46 @@ project/
 
 ## 🔑 Authentication
 
-The application uses **JSON Web Tokens (JWT)** for authentication.
+Customers can log in with **email and password** or with **Google**. Administrators use their own admin login. All login types end the same way: the backend puts a **JWT in an httpOnly cookie** (`token`, valid 2 hours), created in one place (`backend/src/lib/auth-cookie.ts`). After login, the rest of the shop doesn't know or care how the user logged in.
 
-After a successful login, the backend creates a JWT containing information about the authenticated user. The frontend stores the token in `localStorage`.
+- Axios sends the cookie with every request (`withCredentials: true`).
+- Protected endpoints verify it in `authenticateJWT` (401 without login). The cart uses `optionalJWT` so guests can shop too.
+- React can't read the cookie, so it asks `GET /api/auth/me` who is logged in (`AuthContext`).
+- Logout is `POST /api/auth/logout`. React can't remove an httpOnly cookie, so the server does.
+- Administrators are additionally checked through the user's admin status, so customers can't use admin functionality.
 
-Axios automatically adds the token to requests through an interceptor:
+### Why JWT and not sessions
+
+- **Vercel runs the backend as serverless functions.** A session would have to be stored in the database or in Redis and looked up on every request. A JWT is checked with only the secret, so no extra storage is needed.
+- **One token for every login type.** Email, Google and admin login all use the same `setAuthCookie()`, and the same `authenticateJWT` checks them.
+- **Trade-off:** a JWT can't be revoked before it expires. That's why it's only valid for 2 hours.
+
+### Why an httpOnly cookie and not localStorage
+
+JavaScript can't read an httpOnly cookie, so an XSS attack (malicious script on the page) can't steal the token. With `localStorage`, any script on the page could read it.
+
+The frontend and backend are **separate Vercel projects on different domains**, so the cookie is sent between two sites. In production it's therefore set with `SameSite=None; Secure; Partitioned`, and the backend only allows CORS with credentials from `CLIENT_URL`. Locally, `localhost:5173` and `localhost:3000` count as the same site, so `SameSite=Lax` is used. Browsers that block all third-party cookies (for example Safari with default settings) may not accept the cookie. The deployed shop is tested in Chrome.
+
+### Log in with Google (OAuth 2.0 + OpenID Connect)
 
 ```text
-Authorization: Bearer <token>
+1. React:   "Continue with Google" → GET /api/auth/google        (a normal link to our server)
+2. Server:  saves state + PKCE verifier in httpOnly cookies → redirect to Google
+3. Google:  the customer picks an account → GET /api/auth/google/callback?code&state
+4. Server:  checks state, swaps the code for tokens (client secret + code verifier, 5 s timeout),
+            validates the ID token with Zod (iss, aud, exp, sub, email),
+            finds the customer by Google's `sub` or creates them → redirect to React with a
+            one-time login code (valid 60 s)
+5. React:   POST /api/auth/google/exchange { code } → the server sets the normal login cookie
 ```
 
-Protected backend endpoints verify the token before allowing access.
-
-Administrators are additionally checked through the user's admin status, ensuring that authenticated customers cannot access administrator functionality.
+- **Client secret** and other keys are only in the backend's `.env`.
+- **state** (protects against CSRF) **and PKCE** (a stolen code is useless without the verifier) are both used. A login that doesn't match is rejected.
+- **Minimal scope:** `openid email profile`.
+- **Google's tokens never reach the browser.** The server only reads who the user is from the ID token, then throws it away.
+- **The customer is recognized by `sub`, never by email** (column `users.google_id`). Accounts are not merged because the email matches. If the email already has a password account, Google login is refused with a message.
+- **Why the one-time code (step 5)?** The login cookie must be set by a request *from the React app*. Otherwise the browser saves it for the wrong site, because the frontend and backend are on different domains.
+- **If Google doesn't answer** (timeout or error), the customer is sent back to the login page with an understandable message, and the server keeps running.
 
 ---
 
@@ -343,6 +370,13 @@ npm run dev
 | Method | Endpoint           | Description                |
 | ------ | ------------------ | -------------------------- |
 | POST   | `/api/admin/login` | Authenticate administrator |
+| POST   | `/api/customer/login` | Log in customer with email/password |
+| POST   | `/api/customer/register` | Create account and log in |
+| GET    | `/api/auth/google` | Start Google login (redirects to Google) |
+| GET    | `/api/auth/google/callback` | Google sends the customer back here |
+| POST   | `/api/auth/google/exchange` | Swap the one-time code for the login cookie |
+| GET    | `/api/auth/me` | Who is logged in (`{ user }` or `{ user: null }`) |
+| POST   | `/api/auth/logout` | Log out (removes the cookie) |
 
 ### Cart
 

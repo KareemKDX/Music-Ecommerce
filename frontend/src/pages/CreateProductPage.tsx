@@ -21,18 +21,8 @@ function CreateProductPage() {
     setLoading(true);
 
     try {
-      //POST NEW PRODUCT TO DATABASE
-      const token = localStorage.getItem("token");
-
-      await api.post(
-        "/products",
-        { name, description, price, image },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      //POST NEW PRODUCT TO DATABASE (the login cookie is sent automatically)
+      await api.post("/products", { name, description, price, image });
       setCreatedMessage("Product created");
 
       // NAVIGATE TO ADMIN PAGE IF EVERYTHING OK

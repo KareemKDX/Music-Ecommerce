@@ -115,7 +115,7 @@ function EditProductPage() {
       </div>
       <div className="forms-page-container">
         <div className="edit-product-header">
-          <h3>Redigera produkt</h3>
+          <h3>Edit product</h3>
         </div>
 
         <form className="form-card" onSubmit={updateProduct}>
@@ -202,7 +202,7 @@ function EditProductPage() {
           </div>
 
           <button className="primary-button" type="submit">
-            Spara ändringar
+            Save changes
           </button>
 
           <button
@@ -210,7 +210,7 @@ function EditProductPage() {
             type="button"
             onClick={() => navigate("/admin")}
           >
-            Avbryt
+            Cancel
           </button>
         </form>
       </div>
