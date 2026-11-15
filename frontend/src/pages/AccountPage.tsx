@@ -1,24 +1,25 @@
 import "../css/AccountPage.css";
-
-const upcomingFeatures = [
-  {
-    icon: "📦",
-    title: "Order history",
-    text: "Track deliveries and see everything you have bought.",
-  },
-  {
-    icon: "📍",
-    title: "Saved addresses",
-    text: "Check out faster with your shipping details stored.",
-  },
-  {
-    icon: "⬇️",
-    title: "Downloads",
-    text: "Access your samples and software whenever you need them.",
-  },
-];
+import api from "../axios/api";
+import type { Order } from "../types/Order";
+import { useEffect, useState } from "react";
+import { formatDeliveryDate } from "../utils/formatDeliveryDate";
 
 function AccountPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    async function getCustomerOrders() {
+      try {
+        const response = await api.get("/customer/me/orders");
+        setOrders(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    getCustomerOrders();
+  }, []);
+
   return (
     <div className="account-page">
       <div className="account-header">
@@ -30,8 +31,7 @@ function AccountPage() {
         </p>
       </div>
 
-      {/* Preview only: inert makes everything inside non-interactive */}
-      <div className="account-container" inert>
+      <div className="account-container">
         <section className="account-card account-profile">
           <div className="account-avatar">S</div>
           <h2>Your profile</h2>
@@ -55,15 +55,17 @@ function AccountPage() {
             Save changes
           </button>
         </section>
-
         <section className="account-card account-features">
-          <h2>What's coming</h2>
-          {upcomingFeatures.map((feature) => (
-            <div className="account-feature" key={feature.title}>
-              <div className="account-feature-icon">{feature.icon}</div>
+          <h2>Order History</h2>
+
+          {orders.map((order) => (
+            <div className="account-feature" key={order.id}>
+              <div className="account-feature-icon">📦</div>
+
               <div>
-                <h3>{feature.title}</h3>
-                <p>{feature.text}</p>
+                <h3>Receipt number #{order.id}</h3>
+                <p>Date: {formatDeliveryDate(order.created_at)}</p>
+                <p>Status: {order.status}</p>
               </div>
             </div>
           ))}

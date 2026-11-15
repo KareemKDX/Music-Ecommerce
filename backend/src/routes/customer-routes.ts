@@ -184,6 +184,38 @@ customerRouter.get(
   },
 );
 
+/* --- GET /api/customer/me/orders → the logged-in customer's own orders, newest first --- */
+// The user id comes from the login cookie (JWT), never from the URL – a customer can only see their own orders
+customerRouter.get(
+  "/me/orders",
+  authenticateJWT,
+  requireCustomer,
+  async (req, res) => {
+    try {
+      const [orders] = await pool.execute(
+        `SELECT
+           orders.id,
+           orders.status,
+           orders.payment_status,
+           orders.created_at,
+           orders.shipping_price,
+           COALESCE(SUM(order_items.price * order_items.quantity), 0) AS items_total
+         FROM orders
+         LEFT JOIN order_items ON order_items.order_id = orders.id
+         WHERE orders.user_id = ?
+         GROUP BY orders.id
+         ORDER BY orders.created_at DESC`,
+        [req.user!.userId],
+      );
+
+      res.json(orders);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Could not fetch orders" });
+    }
+  },
+);
+
 /* --- PUT /api/customer/me  { username?, email?, password? } → updated profile + new token --- */
 customerRouter.put(
   "/me",

@@ -264,7 +264,7 @@ The frontend and backend are **separate Vercel projects on different domains**, 
 - **Minimal scope:** `openid email profile`.
 - **Google's tokens never reach the browser.** The server only reads who the user is from the ID token, then throws it away.
 - **The customer is recognized by `sub`, never by email** (column `users.google_id`). Accounts are not merged because the email matches. If the email already has a password account, Google login is refused with a message.
-- **Why the one-time code (step 5)?** The login cookie must be set by a request *from the React app*. Otherwise the browser saves it for the wrong site, because the frontend and backend are on different domains.
+- **Why the one-time code (step 5)?** The login cookie must be set by a request _from the React app_. Otherwise the browser saves it for the wrong site, because the frontend and backend are on different domains.
 - **If Google doesn't answer** (timeout or error), the customer is sent back to the login page with an understandable message, and the server keeps running.
 
 ---
@@ -367,16 +367,16 @@ npm run dev
 
 ### Authentication
 
-| Method | Endpoint           | Description                |
-| ------ | ------------------ | -------------------------- |
-| POST   | `/api/admin/login` | Authenticate administrator |
-| POST   | `/api/customer/login` | Log in customer with email/password |
-| POST   | `/api/customer/register` | Create account and log in |
-| GET    | `/api/auth/google` | Start Google login (redirects to Google) |
-| GET    | `/api/auth/google/callback` | Google sends the customer back here |
-| POST   | `/api/auth/google/exchange` | Swap the one-time code for the login cookie |
-| GET    | `/api/auth/me` | Who is logged in (`{ user }` or `{ user: null }`) |
-| POST   | `/api/auth/logout` | Log out (removes the cookie) |
+| Method | Endpoint                    | Description                                       |
+| ------ | --------------------------- | ------------------------------------------------- |
+| POST   | `/api/admin/login`          | Authenticate administrator                        |
+| POST   | `/api/customer/login`       | Log in customer with email/password               |
+| POST   | `/api/customer/register`    | Create account and log in                         |
+| GET    | `/api/auth/google`          | Start Google login (redirects to Google)          |
+| GET    | `/api/auth/google/callback` | Google sends the customer back here               |
+| POST   | `/api/auth/google/exchange` | Swap the one-time code for the login cookie       |
+| GET    | `/api/auth/me`              | Who is logged in (`{ user }` or `{ user: null }`) |
+| POST   | `/api/auth/logout`          | Log out (removes the cookie)                      |
 
 ### Cart
 
@@ -388,11 +388,12 @@ npm run dev
 
 ### Orders
 
-| Method | Endpoint                | Description                     |
-| ------ | ----------------------- | ------------------------------- |
-| GET    | `/api/orders`           | Get orders                      |
-| POST   | `/api/orders`           | Create an order                 |
-| GET    | `/api/orders/:id/items` | Get items belonging to an order |
+| Method | Endpoint                  | Description                                             |
+| ------ | ------------------------- | ------------------------------------------------------- |
+| GET    | `/api/orders`             | Get orders                                              |
+| POST   | `/api/orders`             | Create an order                                         |
+| GET    | `/api/orders/:id/items`   | Get items belonging to an order                         |
+| GET    | `/api/customer/me/orders` | The logged-in customer's own orders (401 without login) |
 
 ---
 
@@ -430,4 +431,4 @@ The project also provided practical experience with authentication, REST APIs, d
 
 **Kareem KDX**
 
-School project — Systemutveckling 1
+School project
