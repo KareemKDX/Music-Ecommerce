@@ -112,6 +112,16 @@ Prompt to the AI (do not code yet)
 
 `payment-adapter.ts` creates a hosted Stripe Checkout Session. React only sends the shipping address, and the server reads the cart and the prices from the database and checks the stock. The order is saved as unpaid before the customer is sent to Stripe, and its id follows the payment as `client_reference_id`. The webhook verifies Stripe's signature and marks the order as paid only once. It lowers the stock in the same database transaction, and `checkout.session.expired` cancels the order. The confirmation page only shows the order's status and never changes it.
 
+### Order confirmation e-mail (Resend)
+
+`email-adapter.ts` is the only file that knows Resend's address and API key. The key is only in the backend's `.env`, and the call has a 5 s timeout. The e-mail's content is built in `lib/order-confirmation.ts`. It has the order number in the subject, plus the customer's name, the products with quantity and price, shipping, and the total, in both an `html` and a `text` version.
+
+- **Sent when the order is paid.** The e-mail is sent from the Stripe webhook, right after `markOrderAsPaid()` has marked the order as paid. It is not sent when the customer clicks "Buy".
+- **One confirmation per order.** The e-mail is only sent when the order *just* became paid. Each send also has the `Idempotency-Key` `order-confirmation/<order id>`, so if Stripe sends the same webhook twice, the customer still gets one e-mail.
+- **A failed e-mail doesn't stop the order.** If Resend doesn't answer or returns an error, the error is logged, the order stays paid, and the webhook still answers 200 (never 500 because of the e-mail).
+- **Escaped and validated.** The customer's name, the e-mail address and the product names go through `escapeHtml()` before they're put in the HTML. Resend's answer is validated with Zod.
+- Without its own domain, the shop sends from `onboarding@resend.dev`, which can only send to the e-mail address of the Resend account.
+
 Image storage (Supabase Storage)
 
 `storage-adapter.ts` uploads product images to a public Supabase bucket

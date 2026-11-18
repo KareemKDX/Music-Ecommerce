@@ -1,6 +1,8 @@
 import express, { Router } from "express";
 import { pool } from "../mysql-database";
 import { verifyWebhook } from "../integrations/payment-adapter";
+import { sendEmail } from "../integrations/email-adapter";
+import { orderConfirmation, type Order } from "../lib/order-confirmation";
 
 const router = Router();
 
@@ -35,7 +37,13 @@ router.post(
 
         if (session.payment_status === "paid") {
           const orderId = Number(session.client_reference_id);
-          await markOrderAsPaid(orderId);
+          const justPaid = await markOrderAsPaid(orderId);
+
+          // SEND THE CONFIRMATION ONLY WHEN THE ORDER JUST BECAME PAID
+          // (if Stripe sends the same webhook again, the order is already paid → no second e-mail)
+          if (justPaid) {
+            await sendOrderConfirmation(orderId);
+          }
         }
       }
 
@@ -60,10 +68,11 @@ router.post(
   },
 );
 
-async function markOrderAsPaid(orderId: number) {
+// Returns true if the order was changed to paid now, false if it was already handled
+async function markOrderAsPaid(orderId: number): Promise<boolean> {
   if (Number.isInteger(orderId) === false || orderId <= 0) {
     console.warn("[WEBHOOK] Invalid order id:", orderId);
-    return;
+    return false;
   }
 
   const connection = await pool.getConnection();
@@ -80,7 +89,7 @@ async function markOrderAsPaid(orderId: number) {
     if ((updateResult as any).affectedRows === 0) {
       await connection.commit();
       console.log("[WEBHOOK] Order already handled, skipping:", orderId);
-      return;
+      return false;
     }
 
     // DEDUCT STOCK
@@ -112,11 +121,77 @@ async function markOrderAsPaid(orderId: number) {
 
     await connection.commit();
     console.log("[WEBHOOK] Order paid:", orderId);
+    return true;
   } catch (err) {
     await connection.rollback();
     throw err;
   } finally {
     connection.release();
+  }
+}
+
+// EMAIL CONFIRMATION. SENDS AFTER ORDER IS MARKED AS PAID
+// A failed e-mail must NOT stop the order: the order is paid anyway. So this function
+// never throws – it only logs the error, and the webhook still answers 200 to Stripe.
+async function sendOrderConfirmation(orderId: number) {
+  try {
+    //Fetch order
+    const [orderRows] = await pool.execute(
+      `SELECT orders.id, orders.shipping_price, users.username, users.email
+       FROM orders
+       JOIN users ON users.id = orders.user_id
+       WHERE orders.id = ?`,
+      [orderId],
+    );
+    const orderRow = (
+      orderRows as {
+        id: number;
+        shipping_price: number | null;
+        username: string;
+        email: string;
+      }[]
+    )[0];
+
+    //return if no order found
+    if (!orderRow) {
+      console.warn("[EMAIL] No customer found for order:", orderId);
+      return;
+    }
+
+    //Fetch all items connected to order by id
+    const [itemRows] = await pool.execute(
+      `SELECT product_name, quantity, price FROM order_items WHERE order_id = ?`,
+      [orderId],
+    );
+    const items = (
+      itemRows as { product_name: string; quantity: number; price: number }[]
+    ).map((item) => ({
+      title: item.product_name,
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+    }));
+
+    const order: Order = {
+      id: orderRow.id,
+      name: orderRow.username,
+      email: orderRow.email,
+      items,
+      shipping: Number(orderRow.shipping_price ?? 0),
+    };
+
+    const { subject, html, text } = orderConfirmation(order);
+
+    // The key is tied to the ORDER: the same order can never get two confirmation e-mails
+    const emailId = await sendEmail({
+      to: order.email,
+      subject,
+      html,
+      text,
+      idempotencyKey: `order-confirmation/${order.id}`,
+    });
+    console.log(`[EMAIL] Sent "${subject}" – Resend id: ${emailId}`);
+  } catch (err) {
+    console.error("[EMAIL] Failed for order", orderId, err);
   }
 }
 
