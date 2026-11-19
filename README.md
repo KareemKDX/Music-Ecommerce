@@ -117,7 +117,7 @@ Prompt to the AI (do not code yet)
 `email-adapter.ts` is the only file that knows Resend's address and API key. The key is only in the backend's `.env`, and the call has a 5 s timeout. The e-mail's content is built in `lib/order-confirmation.ts`. It has the order number in the subject, plus the customer's name, the products with quantity and price, shipping, and the total, in both an `html` and a `text` version.
 
 - **Sent when the order is paid.** The e-mail is sent from the Stripe webhook, right after `markOrderAsPaid()` has marked the order as paid. It is not sent when the customer clicks "Buy".
-- **One confirmation per order.** The e-mail is only sent when the order *just* became paid. Each send also has the `Idempotency-Key` `order-confirmation/<order id>`, so if Stripe sends the same webhook twice, the customer still gets one e-mail.
+- **One confirmation per order.** The e-mail is only sent when the order _just_ became paid. Each send also has the `Idempotency-Key` `order-confirmation/<order id>`, so if Stripe sends the same webhook twice, the customer still gets one e-mail.
 - **A failed e-mail doesn't stop the order.** If Resend doesn't answer or returns an error, the error is logged, the order stays paid, and the webhook still answers 200 (never 500 because of the e-mail).
 - **Escaped and validated.** The customer's name, the e-mail address and the product names go through `escapeHtml()` before they're put in the HTML. Resend's answer is validated with Zod.
 - Without its own domain, the shop sends from `onboarding@resend.dev`, which can only send to the e-mail address of the Resend account.
@@ -180,6 +180,84 @@ Shipping (PostNord): Customer gets a clear message and the order is not created 
 
 Payment (Stripe): If Stripe is down, our customers will not be able to purchase any items which would be very costly, and in worst case could also ruin our reputation when stuff doesnt work. GDPR is very strict with how we are allowed to handle personal data. We would need to trust Stripe that they store our customer data safely and that it is not hosted anywhere outside of EU.
 
+## LR2 (Translated from Swedish to English with AI)
+
+## Login Flow
+
+1. **The user clicks "Sign in with Google".** React redirects the user to my backend (`/api/auth/google`).
+
+2. **The backend prepares the login.** It generates two random secret values, `state` and `code_verifier`, and stores them in HttpOnly cookies that expire after 10 minutes.
+
+3. **The user is redirected to Google.** The URL includes `state` and a `code_challenge` generated using the provided `pkce.ts` file.
+
+4. **The user signs in with Google and grants permission.** Google redirects the user back to my backend (`/callback`) with a one-time authorization code and the same `state` value.
+
+5. **The backend verifies the state.** The returned value must match the one stored in the cookie. Otherwise, the login is rejected.
+
+6. **The backend exchanges the authorization code for a Google token.** This happens directly between the backend and Google. The `code_verifier` and client secret are included. Google responds with an **ID token**.
+
+7. **The backend verifies the ID token.** It checks that the token was issued by Google, was intended for my application, and has not expired. It then looks up the customer using their `google_id` in the database, or creates a new customer if this is their first login.
+
+8. **The backend redirects the user back to React with a custom one-time login code.** This code is valid for 60 seconds. React sends it to `/exchange`, where the backend sets the shop's regular login cookie. The shop can now identify the user.
+
+   This extra step is necessary because the frontend and backend are hosted separately on Vercel. The cookie is set through a request initiated by the React client.
+
+### State and PKCE
+
+**State** protects against attacks during the OAuth login flow.
+
+For example, an attacker might try to trick the application into accepting an OAuth callback that the attacker initiated. Without state validation, the backend cannot reliably verify that the callback belongs to the original login attempt.
+
+**PKCE** protects against authorization code theft. Even if someone manages to obtain the authorization code, for example through a URL or log, they cannot exchange it for a token without the `code_verifier`. This value is only stored on my server.
+
+## Tokens
+
+**Authorization code (Google)**
+
+- Exchanged for an ID token.
+- Used once, immediately.
+- Valid for a few minutes.
+
+**ID token (JWT) (Google)**
+
+- Identifies the user (`sub`, email, name).
+- Used immediately and discarded.
+- Valid for approximately 1 hour.
+
+**Access token (Google)**
+
+- Not used, since the ID token contains all the information I need.
+
+**One-time login code (custom JWT)**
+
+- Transfers the login to the React domain.
+- Sent through the URL.
+- Valid for 60 seconds.
+
+**Shop JWT (custom token)**
+
+- Keeps the user logged in.
+- Stored in an HttpOnly cookie.
+- Valid for 2 hours.
+
+## Session or JWT?
+
+I chose **JWT stored in an HttpOnly cookie**.
+
+After logging in, all users receive the same type of JWT, regardless of whether they signed in with Google or with email and password.
+
+The token contains `userId`, `email`, and `role`, and is valid for 2 hours.
+
+With every request, the browser automatically sends the cookie. The backend verifies its signature using `authenticateJWT`.
+
+I use an **HttpOnly cookie** so that JavaScript cannot read the token.
+
+**Why JWT?**
+
+Mainly because the frontend and backend are hosted separately. The backend runs on Vercel as a serverless application, meaning there is no persistent server memory between requests.
+
+With JWT, the server does not need to store user sessions because the token itself carries the information needed to verify the user's identity.
+
 ## Features
 
 ### 👤 Customer
@@ -231,53 +309,6 @@ project/
     ├── package.json
     └── vite.config.ts
 ```
-
----
-
-## 🔑 Authentication
-
-Customers can log in with **email and password** or with **Google**. Administrators use their own admin login. All login types end the same way: the backend puts a **JWT in an httpOnly cookie** (`token`, valid 2 hours), created in one place (`backend/src/lib/auth-cookie.ts`). After login, the rest of the shop doesn't know or care how the user logged in.
-
-- Axios sends the cookie with every request (`withCredentials: true`).
-- Protected endpoints verify it in `authenticateJWT` (401 without login). The cart uses `optionalJWT` so guests can shop too.
-- React can't read the cookie, so it asks `GET /api/auth/me` who is logged in (`AuthContext`).
-- Logout is `POST /api/auth/logout`. React can't remove an httpOnly cookie, so the server does.
-- Administrators are additionally checked through the user's admin status, so customers can't use admin functionality.
-
-### Why JWT and not sessions
-
-- **Vercel runs the backend as serverless functions.** A session would have to be stored in the database or in Redis and looked up on every request. A JWT is checked with only the secret, so no extra storage is needed.
-- **One token for every login type.** Email, Google and admin login all use the same `setAuthCookie()`, and the same `authenticateJWT` checks them.
-- **Trade-off:** a JWT can't be revoked before it expires. That's why it's only valid for 2 hours.
-
-### Why an httpOnly cookie and not localStorage
-
-JavaScript can't read an httpOnly cookie, so an XSS attack (malicious script on the page) can't steal the token. With `localStorage`, any script on the page could read it.
-
-The frontend and backend are **separate Vercel projects on different domains**, so the cookie is sent between two sites. In production it's therefore set with `SameSite=None; Secure; Partitioned`, and the backend only allows CORS with credentials from `CLIENT_URL`. Locally, `localhost:5173` and `localhost:3000` count as the same site, so `SameSite=Lax` is used. Browsers that block all third-party cookies (for example Safari with default settings) may not accept the cookie. The deployed shop is tested in Chrome.
-
-### Log in with Google (OAuth 2.0 + OpenID Connect)
-
-```text
-1. React:   "Continue with Google" → GET /api/auth/google        (a normal link to our server)
-2. Server:  saves state + PKCE verifier in httpOnly cookies → redirect to Google
-3. Google:  the customer picks an account → GET /api/auth/google/callback?code&state
-4. Server:  checks state, swaps the code for tokens (client secret + code verifier, 5 s timeout),
-            validates the ID token with Zod (iss, aud, exp, sub, email),
-            finds the customer by Google's `sub` or creates them → redirect to React with a
-            one-time login code (valid 60 s)
-5. React:   POST /api/auth/google/exchange { code } → the server sets the normal login cookie
-```
-
-- **Client secret** and other keys are only in the backend's `.env`.
-- **state** (protects against CSRF) **and PKCE** (a stolen code is useless without the verifier) are both used. A login that doesn't match is rejected.
-- **Minimal scope:** `openid email profile`.
-- **Google's tokens never reach the browser.** The server only reads who the user is from the ID token, then throws it away.
-- **The customer is recognized by `sub`, never by email** (column `users.google_id`). Accounts are not merged because the email matches. If the email already has a password account, Google login is refused with a message.
-- **Why the one-time code (step 5)?** The login cookie must be set by a request _from the React app_. Otherwise the browser saves it for the wrong site, because the frontend and backend are on different domains.
-- **If Google doesn't answer** (timeout or error), the customer is sent back to the login page with an understandable message, and the server keeps running.
-
----
 
 ## 🛒 Shopping Cart & Orders
 
