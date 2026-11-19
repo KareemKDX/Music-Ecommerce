@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
           onClick={() => setMenuOpen(false)}
         >
           <div className="nav-link-center">
-            <NavLink to="/" end>
+            <NavLink to="/products" end>
               Products
             </NavLink>
             <NavLink to="/about">About</NavLink>

@@ -6,6 +6,7 @@ import AboutPage from "./pages/AboutPage";
 import AccountPage from "./pages/AccountPage";
 import CustomerLogin from "./pages/CustomerLogin";
 import CustomerRegister from "./pages/CustomerRegister";
+import AllProductsPage from "./pages/AllProductsPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminPage from "./pages/AdminPage";
 import EditProductPage from "./pages/EditProductPage";
@@ -27,76 +28,78 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-      <CurrencyProvider>
-        <CartProvider>
-          <Navbar />
+        <CurrencyProvider>
+          <CartProvider>
+            <Navbar />
 
-          <div className="page-container">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products/:id" element={<ProductPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/account" element={<AccountPage />} />
-              <Route path="/order" element={<OrderPage />} />
-              <Route path="/login" element={<CustomerLogin />} />
-              <Route path="/register" element={<CustomerRegister />} />
-              <Route path="/auth/google" element={<GoogleCallback />} />
-              <Route path="/return" element={<ReturnPage />} />
-              //ADMIN, ROUTE TO ADMIN/LOGIN IF UNAUTHORIZED WITH PROTECTED ROUTE
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <AdminPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/products"
-                element={
-                  <ProtectedRoute>
-                    <AdminProductPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/orders"
-                element={
-                  <ProtectedRoute>
-                    <AdminOrderPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/product/create"
-                element={
-                  <ProtectedRoute>
-                    <CreateProductPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/product/edit/:id"
-                element={
-                  <ProtectedRoute>
-                    <EditProductPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/product/create"
-                element={
-                  <ProtectedRoute>
-                    <CreateProductPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
-          <Footer />
-        </CartProvider>
-      </CurrencyProvider>
+            <div className="page-container">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/products" element={<AllProductsPage />} />
+                <Route path="/products/:id" element={<ProductPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/account" element={<AccountPage />} />
+                <Route path="/order" element={<OrderPage />} />
+                <Route path="/login" element={<CustomerLogin />} />
+                <Route path="/register" element={<CustomerRegister />} />
+                <Route path="/auth/google" element={<GoogleCallback />} />
+                <Route path="/return" element={<ReturnPage />} />
+                //ADMIN, ROUTE TO ADMIN/LOGIN IF UNAUTHORIZED WITH PROTECTED
+                ROUTE
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/products"
+                  element={
+                    <ProtectedRoute>
+                      <AdminProductPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/orders"
+                  element={
+                    <ProtectedRoute>
+                      <AdminOrderPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/product/create"
+                  element={
+                    <ProtectedRoute>
+                      <CreateProductPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/product/edit/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EditProductPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/product/create"
+                  element={
+                    <ProtectedRoute>
+                      <CreateProductPage />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+            <Footer />
+          </CartProvider>
+        </CurrencyProvider>
       </AuthProvider>
     </BrowserRouter>
   );
